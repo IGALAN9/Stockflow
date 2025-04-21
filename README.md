@@ -4,7 +4,7 @@ Untuk memulai Stockflow ini dapat dimulai dengan:
 
 1.**clone repository**
 ```
-https://github.com/IGALAN9/UAS-BACKEND.git
+https://github.com/IGALAN9/Stockflow.git
 ```
 
 2.**install dependencies**
