@@ -1,6 +1,6 @@
 ## Penggunaan
 
-Untuk memulai Media sosial ini dapat dimulai dengan: 
+Untuk memulai Stockflow ini dapat dimulai dengan: 
 
 1.**clone repository**
 ```
