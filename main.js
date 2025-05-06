@@ -1,25 +1,27 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
-const mongoose = require('mongoose');
+const { app, BrowserWindow } = require('electron');
 const path = require('path');
+const connectToDB = require('./db');
+const User = require('./models/User');
+const Shift = require('./models/Shift');
+require('dotenv').config(); 
 
-let isDbConnected = false;
-
-async function connectToDB() {
-  try {
-    await mongoose.connect('mongodb+srv://admin:admin@stockcluster.ntcp7r6.mongodb.net/?retryWrites=true&w=majority&appName=stockCluster', {
+async function migrateInitialData() {
+  const users = await User.find();
+  if (users.length === 0) {
+    const admin = await User.create({ name: 'Admin User', role: 'admin' });
+    await Shift.create({
+      userId: admin._id,
+      date: new Date(),
+      shiftType: 'morning'
     });
-    isDbConnected = true;
-    console.log('✅ MongoDB Connected');
-  } catch (error) {
-    isDbConnected = false;
-    console.error('❌ MongoDB Connection Failed:', error);
+    console.log('✅ Initial data migrated');
   }
 }
 
-function createWindow() {
+async function createWindow() {
   const win = new BrowserWindow({
-    width: 600,
-    height: 400,
+    width: 800,
+    height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true
@@ -27,13 +29,14 @@ function createWindow() {
   });
 
   win.loadFile('index.html');
+
+  win.webContents.once('did-finish-load', async () => {
+    await migrateInitialData();
+    win.webContents.send('migration-complete', 'Migration done or skipped');
+  });
 }
 
 app.whenReady().then(async () => {
-  await connectToDB();
-  createWindow();
-});
-
-ipcMain.handle('get-db-status', () => {
-  return isDbConnected;
+  await connectToDB();   
+  await createWindow();
 });

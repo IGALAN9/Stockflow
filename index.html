@@ -1,26 +1,14 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>MongoDB Connection Status</title>
-</head>
+<head><title>Electron Mongo Migration</title></head>
 <body>
-  <h1>MongoDB Status:</h1>
-  <p id="status">Loading...</p>
+  <h2>Status:</h2>
+  <p id="status">Menunggu migrasi...</p>
 
   <script>
-    async function checkStatus() {
-      const isConnected = await window.api.getDbStatus();
-      const statusEl = document.getElementById('status');
-      if (isConnected) {
-        statusEl.innerText = '✅ Connected to MongoDB';
-        statusEl.style.color = 'green';
-      } else {
-        statusEl.innerText = '❌ Failed to connect';
-        statusEl.style.color = 'red';
-      }
-    }
-
-    checkStatus();
+    window.api.onMigrationComplete((msg) => {
+      document.getElementById('status').innerText = msg;
+    });
   </script>
 </body>
 </html>

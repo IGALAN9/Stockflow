@@ -1,5 +1,7 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('api', {
-  getDbStatus: () => ipcRenderer.invoke('get-db-status')
+  onMigrationComplete: (callback) => ipcRenderer.on('migration-complete', (event, message) => {
+    callback(message);
+  })
 });
