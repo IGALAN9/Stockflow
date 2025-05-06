@@ -11,5 +11,9 @@
   "license": "ISC",
   "devDependencies": {
     "electron": "^35.2.0"
+  },
+  "dependencies": {
+    "mongodb": "^6.16.0",
+    "mongoose": "^8.14.1"
   }
 }
