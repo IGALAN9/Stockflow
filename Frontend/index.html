@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Main Menu</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="profile">
+        <div class="avatar"></div>
+        <p class="profile-label">USER PROFILE</p>
+        <p class="profile-id">ID : 14253658613</p>
+      </div>
+      <nav class="menu">
+        <a href="#">
+          <div class="menu-icon-box">
+            <img src="https://img.icons8.com/ios-filled/50/user.png"/>
+          </div>
+          My Account
+        </a>
+        <a href="#">
+          <div class="menu-icon-box">
+            <img src="https://img.icons8.com/ios-filled/50/settings.png"/>
+          </div>
+          Setting
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <header class="topbar">
+        <div class="menu-tabs">
+          <button class="tab active" onclick="location.href='index.html'">Main Menu</button>
+          <button class="tab" onclick="location.href='./Shiftlist/shiftlist.html'">Shift List</button>
+        </div>
+        <div class="top-right">
+          <div class="date" id="today-date"></div>
+        </div>
+      </header>
+
+      <section class="stock-card">
+        <div class="stock-chart">
+          <h3>STOCK GLOBAL</h3>
+          <canvas id="stockChart" height="200"></canvas>
+        </div>
+        <div class="stock-info">
+          <select>
+            <option>Weekly</option>
+            <option>Monthly</option>
+          </select>
+          <ul>
+            <li>Bahan dasar <strong id="stock-bahandasar">0 Kg</strong></li>
+            <li>Roll fiber <strong id="stock-rollfiber">0 Kg</strong></li>
+            <li>Cup plastik <strong id="stock-cupplastik">0 Kg</strong></li>
+            <li>Recycle <strong id="stock-recycle">0 Kg</strong></li>
+          </ul>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button class="btn" onclick="location.href='./EditStock/showstockglobal.html'">➕ Edit Stock</button>
+        <button class="btn" onclick="location.href='./Shift/shift.html'">➕ Shift</button>
+      </div>
+    </main>
+  </div>
+
+  <!-- JS -->
+  <script>
+    // Tanggal Hari Ini
+    const dateElement = document.getElementById('today-date');
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const today = new Date().toLocaleDateString('en-US', options);
+    dateElement.textContent = today;
+
+    // Ambil dan hitung total bahan dasar dari localStorage
+    function getBahanDasarTotal() {
+      const data = JSON.parse(localStorage.getItem('stocks') || '[]');
+      let total = 0;
+      data.forEach(item => {
+        const berat = parseFloat(item.berat);
+        if (!isNaN(berat)) total += berat;
+      });
+      return total;
+    }
+
+    // Ambil dan hitung total roll fiber dari localStorage
+    function getRollFiberTotal() {
+      const data = JSON.parse(localStorage.getItem('rollfiber') || '[]');
+      let total = 0;
+      data.forEach(item => {
+        const berat = parseFloat(item.berat);
+        if (!isNaN(berat)) total += berat;
+      });
+      return total;
+    }
+
+    // Ambil dan hitung total cup plastik dari localStorage
+    function getCupPlastikTotal() {
+      const data = JSON.parse(localStorage.getItem('cupplastik') || '[]');
+      let total = 0;
+      data.forEach(item => {
+        const berat = parseFloat(item.berat);
+        if (!isNaN(berat)) total += berat;
+      });
+      return total;
+    }
+
+    // Ambil dan hitung total recycle dari localStorage
+    function getRecycleTotal() {
+      const data = JSON.parse(localStorage.getItem('recycle') || '[]');
+      let total = 0;
+      data.forEach(item => {
+        const berat = parseFloat(item.berat);
+        if (!isNaN(berat)) total += berat;
+      });
+      return total;
+    }
+
+    const bahanDasarKg = getBahanDasarTotal();
+    document.getElementById('stock-bahandasar').textContent = `${bahanDasarKg.toFixed(2).replace(/\.00$/, '')} Kg`;
+
+    const rollFiberKg = getRollFiberTotal();
+    document.getElementById('stock-rollfiber').textContent = `${rollFiberKg.toFixed(2).replace(/\.00$/, '')} Kg`;
+
+    const cupPlastikKg = getCupPlastikTotal();
+    document.getElementById('stock-cupplastik').textContent = `${cupPlastikKg.toFixed(2).replace(/\.00$/, '')} Kg`;
+
+    const recycleKg = getRecycleTotal();
+    document.getElementById('stock-recycle').textContent = `${recycleKg.toFixed(2).replace(/\.00$/, '')} Kg`;
+
+    // Tampilkan di Chart.js
+    const ctx = document.getElementById('stockChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Bahan dasar', 'Roll fiber', 'Cup plastik', 'Recycle'],
+        datasets: [{
+          label: 'Kg',
+          data: [bahanDasarKg, rollFiberKg, cupPlastikKg, recycleKg],
+          backgroundColor: ['#4B2991', '#9B4DFF', '#5D4AFF', '#BF9DFF']
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { beginAtZero: true }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

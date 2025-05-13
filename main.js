@@ -28,7 +28,7 @@ async function createWindow() {
     }
   });
 
-  win.loadFile('index.html');
+  win.loadFile('./Frontend/Login/login.html');
 
   win.webContents.once('did-finish-load', async () => {
     await migrateInitialData();

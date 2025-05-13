@@ -1,0 +1,210 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: #fff;
+  }
+  
+  .container {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+  }
+  
+  /* SIDEBAR */
+  .sidebar {
+    width: 220px;
+    background: white;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    border-right: 1px solid #eee;
+  }
+  
+  .profile {
+    width: 100%;
+    background: #4B7CEB;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+  }
+  
+  .avatar {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border-radius: 50%;
+    margin: auto;
+  }
+  
+  .profile-label {
+    font-weight: bold;
+    margin: 10px 0 0;
+    font-size: 14px;
+  }
+  
+  .profile-id {
+    font-size: 13px;
+    opacity: 0.9;
+    margin: 5px 0 0;
+  }
+  
+  .menu {
+    width: 95%;
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 0 10px;
+  }
+  
+  .menu a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    background-color: white;
+    color: #4B7CEB;
+    border: 2px solid #4B7CEB;
+    font-weight: bold;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.2s;
+  }
+  
+  .menu a:hover {
+    background-color: #e6f0ff;
+  }
+  
+  .menu-icon-box {
+    width: 30px;
+    height: 30px;
+    background-color: #4B7CEB;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .menu-icon-box img {
+    filter: brightness(0) invert(1);
+    width: 18px;
+    height: 18px;
+  }
+  
+  /* MAIN CONTENT */
+  .main {
+    flex-grow: 1;
+    padding: 20px 40px;
+    position: relative;
+  }
+  
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .menu-tabs {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .tab {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 5px 10px;
+    font-weight: bold;
+    color: #000;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .tab.active {
+    color: #4B7CEB;
+    border-color: #4B7CEB;
+  }
+  
+  .top-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .date {
+    font-size: 14px;
+    color: #555;
+  }
+  
+  .stock-card {
+    display: flex;
+    margin-top: 30px;
+    background: #fff;
+    box-shadow: 0 0 10px #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .stock-chart {
+    width: 35%;
+  }
+  
+  .stock-info {
+    width: 30%;
+    text-align: left;
+  }
+  
+  .stock-info select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+  }
+  
+  .stock-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .stock-info li {
+    margin: 15px 0;
+    font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .stock-info strong {
+    font-weight: bold;
+  }  
+  
+  .actions {
+    position: absolute;
+    bottom: 40px;
+    right: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .btn {
+    background: white;
+    border: 2px solid #DADADA;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    color: #4B2991;
+    font-weight: bold;
+    transition: all 0.2s ease;
+  }
+  
+  .btn:hover {
+    background: #f0f0ff;
+  }
