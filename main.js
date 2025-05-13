@@ -17,9 +17,9 @@ async function migrateInitialData() {
     });
     await Stock.create({
       stock_bahan_murni: 50,
-      stock_fiber: 100,
-      stock_recycle: 200,
-      stock_cup: 90
+      stock_fiber: 50,
+      stock_recycle: 50,
+      stock_cup: 50
     });
     console.log('✅ Initial data migrated');
   }
