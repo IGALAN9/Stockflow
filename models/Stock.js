@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 
 const stockSchema = new mongoose.Schema({
-  stock_id: { type: String, required: true, unique: true },
   stock_bahan_murni: { type: Number, required: true, default: 0 },
   stock_fiber: { type: Number, required: true, default: 0 },
   stock_recycle: { type: Number, required: true, default: 0 },

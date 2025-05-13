@@ -3,6 +3,7 @@ const path = require('path');
 const connectToDB = require('./db');
 const User = require('./models/User');
 const Shift = require('./models/Shift');
+const Stock = require('./models/Stock');
 require('dotenv').config(); 
 
 async function migrateInitialData() {
@@ -13,6 +14,12 @@ async function migrateInitialData() {
       userId: admin._id,
       date: new Date(),
       shiftType: 'morning'
+    });
+    await Stock.create({
+      stock_bahan_murni: 50,
+      stock_fiber: 100,
+      stock_recycle: 200,
+      stock_cup: 90
     });
     console.log('✅ Initial data migrated');
   }
