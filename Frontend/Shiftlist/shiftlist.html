@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shift List</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+  <link rel="stylesheet" href="./style.css" />
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #fafafa;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      text-decoration: underline;
+    }
+
+    .shift-entry {
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .shift-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .shift-notice {
+      color: red;
+      font-size: 13px;
+      font-weight: normal;
+      margin: 5px 20px 10px;
+    }
+
+    .shift-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .shift-table th, .shift-table td {
+      padding: 10px;
+      font-size: 14px;
+      border-top: 1px solid #eee;
+      text-align: center;
+    }
+
+    .shift-details {
+      display: none;
+      padding: 10px 20px 20px 20px;
+    }
+
+    .shift-entry.active .shift-details {
+      display: block;
+    }
+
+    .btn-add {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      background: #6D28D9;
+      color: white;
+      font-size: 16px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-delete, .btn-export {
+      margin-bottom: 15px;
+      margin-left: 15px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      background: #dc2626;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-export {
+      background: #16a34a;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: #fff;
+      border-bottom: 1px solid #ccc;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      color: #333;
+      padding: 8px 12px;
+    }
+
+    .highlight-error {
+      background-color: #ffe5e5;
+      font-weight: bold;
+    }
+
+    .checkbox-select {
+      margin-right: 10px;
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+
+    .checkbox-select-all {
+      margin-right: 10px;
+      transform: scale(1.2);
+      cursor: pointer;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="topbar">
+    <div class="menu-tabs">
+      <button class="tab" onclick="location.href='../index.html'">Main Menu</button>
+      <button class="tab active" onclick="location.href='../Shiftlist/shiftlist.html'">Shift List</button>
+    </div>
+    <div class="top-right">
+      <div class="date" id="today-date"></div>
+    </div>
+  </header>
+
+  <h2>SHIFT LIST</h2>
+
+  <div style="margin-bottom: 10px;">
+    <label>
+      <input type="checkbox" id="select-all" class="checkbox-select-all" /> Pilih Semua
+    </label>
+    <button class="btn-delete" onclick="handleDelete()">🗑️ Hapus</button>
+  </div>
+
+  <div id="shift-list"></div>
+
+  <button class="btn-add" onclick="exportToExcel()">📤 Buat laporan</button>
+
+  <script>
+    document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-GB', {
+      weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    const shiftList = document.getElementById('shift-list');
+    let savedShifts = JSON.parse(localStorage.getItem('shifts') || '[]');
+
+    savedShifts.forEach((shift, index) => {
+      const isErrorHigh = parseFloat(shift.totalError) > 100;
+      const container = document.createElement('div');
+      container.className = 'shift-entry';
+      container.dataset.index = index;
+
+      container.innerHTML = `
+        <div class="shift-header" onclick="toggleShift(this)">
+          <span>
+            <input type="checkbox" class="checkbox-select" onclick="event.stopPropagation()" />
+            ⬇️ ${shift.title}
+            <span style="font-size: 12px; font-weight: normal; margin-left: 6px;">(oleh ${shift.creator || 'Tidak diketahui'})</span>
+          </span>
+          <span>${shift.date}</span>
+        </div>
+        ${isErrorHigh ? '<div class="shift-notice">🔴 Error tinggi! Total error melebihi 100 Kg</div>' : ''}
+        <div class="shift-details">
+          <table class="shift-table">
+            <thead>
+              <tr>
+                <th>Bahan dasar</th>
+                <th>Roll fiber</th>
+                <th>Cup plastik</th>
+                <th>Recycle</th>
+                <th>Error bahan dasar & roll fiber</th>
+                <th>Error roll fiber & cup plastik</th>
+                <th>Total error</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="${isErrorHigh ? 'highlight-error' : ''}">
+                <td>${shift.bahanDasar} Kg</td>
+                <td>${shift.rollFiber} Kg</td>
+                <td>${shift.cupPlastik} Kg</td>
+                <td>${shift.recycle} Kg</td>
+                <td>${shift.error1} Kg</td>
+                <td>${shift.error2} Kg</td>
+                <td>${shift.totalError} Kg</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      `;
+      shiftList.appendChild(container);
+    });
+
+    function toggleShift(header) {
+      const parent = header.parentElement;
+      parent.classList.toggle('active');
+    }
+
+    function handleDelete() {
+      const entries = document.querySelectorAll('.shift-entry');
+      const newShifts = [];
+
+      entries.forEach((entry, idx) => {
+        const checkbox = entry.querySelector('.checkbox-select');
+        if (!checkbox.checked) {
+          newShifts.push(savedShifts[idx]);
+        }
+      });
+
+      const selectedCount = savedShifts.length - newShifts.length;
+
+      if (selectedCount === 0) {
+        if (!confirm('Yakin ingin menghapus semua data shift?')) return;
+      } else {
+        if (!confirm(`Yakin ingin menghapus ${selectedCount} data yang dipilih?`)) return;
+      }
+
+      localStorage.setItem('shifts', JSON.stringify(newShifts));
+      location.reload();
+    }
+
+    document.getElementById('select-all').addEventListener('change', function () {
+      const checkboxes = document.querySelectorAll('.checkbox-select');
+      checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+
+    async function exportToExcel() {
+      const selectedShifts = [];
+      const entries = document.querySelectorAll('.shift-entry');
+
+      entries.forEach((entry, idx) => {
+        const checkbox = entry.querySelector('.checkbox-select');
+        if (checkbox.checked) {
+          selectedShifts.push(savedShifts[idx]);
+        }
+      });
+
+      if (selectedShifts.length === 0) {
+        alert('Pilih minimal satu shift untuk diekspor.');
+        return;
+      }
+
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Shift Report');
+
+      worksheet.addRow([
+        'Judul Shift', 'Nama', 'Tanggal', 'Bahan Dasar (Kg)', 'Roll Fiber (Kg)',
+        'Cup Plastik (Kg)', 'Recycle (Kg)', 'Error 1 (Kg)', 'Error 2 (Kg)', 'Total Error (Kg)'
+      ]);
+
+      selectedShifts.forEach((shift) => {
+        const totalError = parseFloat(shift.totalError || 0);
+        const formattedDate = new Date(shift.date).toLocaleDateString('en-GB', {
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+
+        const row = worksheet.addRow([
+          shift.title || '',
+          shift.creator || '',
+          formattedDate,
+          shift.bahanDasar || '',
+          shift.rollFiber || '',
+          shift.cupPlastik || '',
+          shift.recycle || '',
+          shift.error1 || '',
+          shift.error2 || '',
+          shift.totalError || '',
+        ]);
+
+        if (totalError > 100) {
+          row.eachCell((cell) => {
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FFFFCCCC' }, // merah muda
+            };
+          });
+        }
+      });
+
+      // Auto-fit kolom
+      worksheet.columns.forEach((col) => {
+        let maxLength = 10;
+        col.eachCell({ includeEmpty: true }, (cell) => {
+          const val = cell.value ? cell.value.toString() : '';
+          maxLength = Math.max(maxLength, val.length);
+        });
+        col.width = maxLength + 2;
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `Shift-Report-${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  </script>
+
+</body>
+</html>

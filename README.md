@@ -12,7 +12,7 @@ https://github.com/IGALAN9/Stockflow.git
 npm install
 ```
 
-3.**install dependencies**
+3.**Run the program**
 ```
 npm run start
 ```

@@ -1,0 +1,119 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body, html {
+  height: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(135deg, #76c7e1, #9873d7);
+  filter: blur(100px);
+  animation: blurOut 2s ease-out forwards;
+  z-index: -1;
+}
+
+@keyframes blurOut {
+  from { filter: blur(100px); }
+  to { filter: blur(10px); }
+}
+
+.login-container {
+  background: rgba(60, 120, 255, 0.7);
+  backdrop-filter: blur(0px);
+  animation: containerBlurIn 2s ease-out forwards;
+  border-radius: 20px;
+  padding: 40px 30px;
+  width: 350px;
+  position: relative;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  color: white;
+}
+
+@keyframes containerBlurIn {
+  from { backdrop-filter: blur(0px); }
+  to { backdrop-filter: blur(100px); }
+}
+
+.profile-pic {
+  position: absolute;
+  top: -45px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #4a89ff;
+  border-radius: 50%;
+  padding: 10px;
+  border: 5px solid white;
+}
+
+.profile-pic img {
+  width: 50px;
+  height: 50px;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 10px;
+  margin: 20px 0;
+  padding: 10px;
+}
+
+.input-group .icon {
+  margin-right: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.input-group input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 16px;
+  color: #333;
+}
+
+button {
+  background: #2f2f5c;
+  color: white;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 10px;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #1e1e3c;
+}
+
+.options {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.options a {
+  color: #f3f3f3;
+  text-decoration: none;
+}
