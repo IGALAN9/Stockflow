@@ -13,14 +13,15 @@
     <div class="profile-pic">
       <img src="https://img.icons8.com/ios-filled/100/ffffff/user-male-circle.png" alt="User" />
     </div>
-    <form action="../index.html" method="get">
+    <div id="error-message" style="color: yellow; text-align: center; margin-bottom: 10px;"></div>
+    <form id="login-form">
       <div class="input-group">
         <span class="icon">👤</span>
-        <input type="text" placeholder="User ID" />
+        <input type="text" id="username" placeholder="Username" required />
       </div>
       <div class="input-group">
         <span class="icon">🔒</span>
-        <input type="password" placeholder="Password" />
+        <input type="password" id ="password" placeholder="Password" required />
       </div>
       <button type="submit">Login</button>
       <div class="options">
@@ -29,5 +30,28 @@
       </div>
     </form>
   </div>
+  <script>
+    const form = document.getElementById('login-form');
+    const errorDiv = document.getElementById('error-message');
+    form.addEventListener('submit', async(e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      const result = await window.api.login(username, password);
+
+      if (result.success){
+        window.api.redirectToDashboard();
+      } else {
+        errorDiv.textContent = result.message;
+
+        document.getElementById('username').value = '';
+        document.getElementById('username').focus();
+        document.getElementById('password').value = '';
+        document.getElementById('username').focus();
+      }
+    });
+  </script>
 </body>
 </html>
