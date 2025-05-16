@@ -199,20 +199,31 @@
       document.getElementById('total-kg').textContent = total;
     }
 
-    function deleteSelected() {
-      let stocks = JSON.parse(localStorage.getItem('stocks') || '[]');
+    async function deleteSelected() {
       const rows = document.querySelectorAll('#stock-table tbody tr');
-      let newStocks = [];
+      const idsToDelete = [];
 
-      rows.forEach((row, index) => {
+      rows.forEach(row => {
         const checkbox = row.querySelector('.check-row');
-        if (!checkbox.checked) {
-          newStocks.push(stocks[index]);
+        if (checkbox.checked) {
+          idsToDelete.push(row.dataset.id);
         }
       });
 
-      localStorage.setItem('stocks', JSON.stringify(newStocks));
-      location.reload();
+      if (idsToDelete.length === 0) return;
+
+      const response = await fetch('http://localhost:3000/api/stocks/delete', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids: idsToDelete })
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        location.reload();
+      } else {
+        alert('Gagal menghapus data.');
+      }
     }
 
     function toggleAll(masterCheckbox) {
@@ -220,12 +231,16 @@
       checkboxes.forEach(cb => cb.checked = masterCheckbox.checked);
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-      const stockData = JSON.parse(localStorage.getItem('stocks') || '[]');
+    window.addEventListener('DOMContentLoaded', async () => {
       const tbody = document.querySelector('#stock-table tbody');
+      const response = await fetch('http://localhost:3000/api/stocks/details?jenis=bahan_murni');
+      const stockData = await response.json();
 
       stockData.forEach(item => {
         const row = document.createElement('tr');
+        row.dataset.id = item._id;
+        row.dataset.jenis = item.jenis;
+        row.dataset.berat = item.berat;
         row.innerHTML = `
           <td><input type="checkbox" class="check-row" /></td>
           <td>${item.merk}</td>

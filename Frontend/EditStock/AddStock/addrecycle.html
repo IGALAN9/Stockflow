@@ -162,7 +162,7 @@
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
 
-    function saveStock() {
+    async function saveStock() {
       const merk = document.getElementById('merk').value.trim();
       const berat = document.getElementById('berat').value.trim();
 
@@ -171,22 +171,27 @@
         return;
       }
 
-      const stock = {
-        merk: merk,
-        berat: parseFloat(berat),
-        tanggal: new Date().toLocaleDateString('en-GB', {
-          weekday: 'long', day: 'numeric', month: 'long'
-        })
-      };
+      try {
+        const response = await fetch('http://localhost:3000/api/stocks/add', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jenis: 'recycle',
+            merk: merk,
+            berat: parseFloat(berat),
+            tanggal: new Date().toISOString()
+          })
+        });
 
-      // Retrieve existing stock for bahan dasar
-      let stocks = JSON.parse(localStorage.getItem('recycle') || '[]');
-      stocks.push(stock);
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.message || 'Gagal menambahkan ke database');
+        }
 
-      // Save updated stock to localStorage
-      localStorage.setItem('recycle', JSON.stringify(stocks));
-
-      window.location.href = '../../EditStock/DetailStock/recycle.html';
+        window.location.href = '../../EditStock/DetailStock/recycle.html';
+      } catch (err) {
+        alert('Terjadi kesalahan: ' + err.message);
+      }
     }
   </script>
 </body>

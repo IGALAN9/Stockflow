@@ -72,87 +72,51 @@
 
   <!-- JS -->
   <script>
+    document.addEventListener('DOMContentLoaded', () => {
+    fetch('http://localhost:3000/api/stocks/stock')
+      .then(response => response.json())
+      .then(data => {
+        const bahanDasarKg = data.stock_bahan_murni ?? 0;
+        const rollFiberKg = data.stock_fiber ?? 0;
+        const cupPlastikKg = data.stock_cup ?? 0;
+        const recycleKg = data.stock_recycle ?? 0;
+
+        document.getElementById('stock-bahandasar').textContent = `${bahanDasarKg} Kg`;
+        document.getElementById('stock-rollfiber').textContent = `${rollFiberKg} Kg`;
+        document.getElementById('stock-cupplastik').textContent = `${cupPlastikKg} Kg`;
+        document.getElementById('stock-recycle').textContent = `${recycleKg} Kg`;
+
+        // Buat Chart setelah data tersedia
+        const ctx = document.getElementById('stockChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Bahan dasar', 'Roll fiber', 'Cup plastik', 'Recycle'],
+            datasets: [{
+              label: 'Kg',
+              data: [bahanDasarKg, rollFiberKg, cupPlastikKg, recycleKg],
+              backgroundColor: ['#4B2991', '#9B4DFF', '#5D4AFF', '#BF9DFF']
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
+        });
+      })
+      .catch(error => {
+        console.error('Gagal mengambil data stok:', error);
+      });
+
     // Tanggal Hari Ini
     const dateElement = document.getElementById('today-date');
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const today = new Date().toLocaleDateString('en-US', options);
     dateElement.textContent = today;
+  });
 
-    // Ambil dan hitung total bahan dasar dari localStorage
-    function getBahanDasarTotal() {
-      const data = JSON.parse(localStorage.getItem('stocks') || '[]');
-      let total = 0;
-      data.forEach(item => {
-        const berat = parseFloat(item.berat);
-        if (!isNaN(berat)) total += berat;
-      });
-      return total;
-    }
-
-    // Ambil dan hitung total roll fiber dari localStorage
-    function getRollFiberTotal() {
-      const data = JSON.parse(localStorage.getItem('rollfiber') || '[]');
-      let total = 0;
-      data.forEach(item => {
-        const berat = parseFloat(item.berat);
-        if (!isNaN(berat)) total += berat;
-      });
-      return total;
-    }
-
-    // Ambil dan hitung total cup plastik dari localStorage
-    function getCupPlastikTotal() {
-      const data = JSON.parse(localStorage.getItem('cupplastik') || '[]');
-      let total = 0;
-      data.forEach(item => {
-        const berat = parseFloat(item.berat);
-        if (!isNaN(berat)) total += berat;
-      });
-      return total;
-    }
-
-    // Ambil dan hitung total recycle dari localStorage
-    function getRecycleTotal() {
-      const data = JSON.parse(localStorage.getItem('recycle') || '[]');
-      let total = 0;
-      data.forEach(item => {
-        const berat = parseFloat(item.berat);
-        if (!isNaN(berat)) total += berat;
-      });
-      return total;
-    }
-
-    const bahanDasarKg = getBahanDasarTotal();
-    document.getElementById('stock-bahandasar').textContent = `${bahanDasarKg.toFixed(2).replace(/\.00$/, '')} Kg`;
-
-    const rollFiberKg = getRollFiberTotal();
-    document.getElementById('stock-rollfiber').textContent = `${rollFiberKg.toFixed(2).replace(/\.00$/, '')} Kg`;
-
-    const cupPlastikKg = getCupPlastikTotal();
-    document.getElementById('stock-cupplastik').textContent = `${cupPlastikKg.toFixed(2).replace(/\.00$/, '')} Kg`;
-
-    const recycleKg = getRecycleTotal();
-    document.getElementById('stock-recycle').textContent = `${recycleKg.toFixed(2).replace(/\.00$/, '')} Kg`;
-
-    // Tampilkan di Chart.js
-    const ctx = document.getElementById('stockChart').getContext('2d');
-    new Chart(ctx, {
-      type: 'bar',
-      data: {
-        labels: ['Bahan dasar', 'Roll fiber', 'Cup plastik', 'Recycle'],
-        datasets: [{
-          label: 'Kg',
-          data: [bahanDasarKg, rollFiberKg, cupPlastikKg, recycleKg],
-          backgroundColor: ['#4B2991', '#9B4DFF', '#5D4AFF', '#BF9DFF']
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: { beginAtZero: true }
-        }
-      }
-    });
   </script>
 </body>
 </html>

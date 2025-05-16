@@ -143,59 +143,24 @@
     document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-GB', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
+   
+    document.addEventListener('DOMContentLoaded', () => {
+      fetch('http://localhost:3000/api/stocks/stock')
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById('bahan-dasar-kg').textContent = data.stock_bahan_murni ?? 0;
+          document.getElementById('roll-fiber-kg').textContent = data.stock_fiber ?? 0;
+          document.getElementById('cup-plastik-kg').textContent = data.stock_cup ?? 0;
+          document.getElementById('recycle-kg').textContent = data.stock_recycle ?? 0;
+        })
+        .catch(error => {
+          console.error('Gagal mengambil data stok:', error);
+        });
+        });
 
-    // Ambil data dari localStorage dan hitung total Kg bahan dasar
-    window.addEventListener('DOMContentLoaded', () => {
-      const data = JSON.parse(localStorage.getItem('stocks') || '[]');
-      let totalKg = 0;
-
-      data.forEach(item => {
-        const berat = parseFloat(item.berat);
-        if (!isNaN(berat)) totalKg += berat;
-      });
-
-      document.getElementById('bahan-dasar-kg').textContent = totalKg.toFixed(2).replace(/\.00$/, '');
-    });
-
-    // Ambil data dari localStorage dan hitung total Kg roll fiber
-    window.addEventListener('DOMContentLoaded', () => {
-      const data = JSON.parse(localStorage.getItem('rollfiber') || '[]');
-      let totalKg = 0;
-
-      data.forEach(item => {
-        const berat = parseFloat(item.berat);
-        if (!isNaN(berat)) totalKg += berat;
-      });
-
-      document.getElementById('roll-fiber-kg').textContent = totalKg.toFixed(2).replace(/\.00$/, '');
-    });
-
-      // Ambil data dari localStorage dan hitung total Kg cup plastik
-    window.addEventListener('DOMContentLoaded', () => {
-      const data = JSON.parse(localStorage.getItem('cupplastik') || '[]');
-      let totalKg = 0;
-
-      data.forEach(item => {
-        const berat = parseFloat(item.berat);
-        if (!isNaN(berat)) totalKg += berat;
-      });
-
-      document.getElementById('cup-plastik-kg').textContent = totalKg.toFixed(2).replace(/\.00$/, '');
-    });
-
-    // Ambil data dari localStorage dan hitung total Kg recycle
-    window.addEventListener('DOMContentLoaded', () => {
-      const data = JSON.parse(localStorage.getItem('recycle') || '[]');
-      let totalKg = 0;
-
-      data.forEach(item => {
-        const berat = parseFloat(item.berat);
-        if (!isNaN(berat)) totalKg += berat;
-      });
-
-      document.getElementById('recycle-kg').textContent = totalKg.toFixed(2).replace(/\.00$/, '');
-    });
-      
+    function format(val) {
+      return parseFloat(val).toFixed(2).replace(/\.00$/, '');
+    }
   </script>
 </body>
 </html>

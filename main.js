@@ -7,7 +7,28 @@ const { ipcMain } = require('electron');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const { connect } = require('http2');
+const Stock = require('./models/Stock');
 require('dotenv').config(); 
+require('./app.js');
+
+async function migrateInitialData() {
+  const users = await User.find();
+  if (users.length === 0) {
+    const admin = await User.create({ name: 'Admin User', role: 'admin' });
+    await Shift.create({
+      userId: admin._id,
+      date: new Date(),
+      shiftType: 'morning'
+    });
+    await Stock.create({
+      stock_bahan_murni: 0,
+      stock_fiber: 0,
+      stock_recycle: 0,
+      stock_cup: 0
+    });
+    console.log('✅ Initial data migrated');
+  }
+}
 
 async function createWindow() {
   const win = new BrowserWindow({
