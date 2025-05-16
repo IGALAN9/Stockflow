@@ -1,4 +1,5 @@
 const { app, BrowserWindow } = require('electron');
+const mongoose = require('mongoose');
 const path = require('path');
 const connectToDB = require('./db');
 const User = require('./models/User');
@@ -127,7 +128,7 @@ ipcMain.handle('save-shift', async (event, shiftData) => {
 
 ipcMain.handle('get-shifts', async () => {
   try {
-    const shifts = await Shift.find().sort({ createdAt: -1 });
+    const shifts = await Shift.find().sort({ createdAt: -1 }).lean();
     return { success: true, shifts };
   } catch (error) {
     console.error('Error fetching shifts:', error);
@@ -137,9 +138,18 @@ ipcMain.handle('get-shifts', async () => {
 
 ipcMain.handle('delete-shifts', async (event, shiftIds) => {
   try {
-    await Shift.deleteMany({ _id: { $in: shiftIds } });
+    const objectIds = shiftIds
+      .filter(id => typeof id === 'string' && id.length === 24)
+      .map(id => new mongoose.Types.ObjectId(id));
+
+    if (objectIds.length === 0) {
+      return { success: false, message: 'Tidak ada ID valid untuk dihapus' };
+    }
+
+    await Shift.deleteMany({ _id: { $in: objectIds } });
     return { success: true };
   } catch (error) {
+    console.error('Error deleting shifts:', error);
     return { success: false, message: error.message };
   }
 });

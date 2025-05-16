@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Shift List</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
-  <link rel="stylesheet" href="./style.css" />
+  <link rel="stylesheet" href="../style.css" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -165,64 +165,107 @@
     const shiftList = document.getElementById('shift-list');
     let savedShifts = [];
 
-window.electronAPI.getShifts().then(response => {
-  if (response.success) {
-    savedShifts = response.shifts;
-    renderShiftList();
-  } else {
-    alert('Gagal memuat data shift!');
-  }
-});
+    window.electronAPI.getShifts().then(response => {
+      console.log('Respon getShifts:', response);
+      if (response.success) {
+        savedShifts = response.shifts;
+        renderShiftList();
+      } else {
+        alert('Gagal memuat data shift!');
+      }
+    });
 
-function renderShiftList() {
-  shiftList.innerHTML = ''; // clear existing
+    function objectIdFromBuffer(bufferObj) {
+      // Konversi objek buffer BSON ke string hex ObjectId
+      const buffer = new Uint8Array(Object.values(bufferObj.buffer));
+      return Array.from(buffer).map(b => b.toString(16).padStart(2, '0')).join('');
+    }
 
-  savedShifts.forEach((shift, index) => {
-    const isErrorHigh = parseFloat(shift.totalError) > 100;
-    const container = document.createElement('div');
-    container.className = 'shift-entry';
-    container.dataset.index = index;
+    function renderShiftList() {
+      shiftList.innerHTML = '';
 
-    container.innerHTML = `
-      <div class="shift-header" onclick="toggleShift(this)">
-        <span>
-          <input type="checkbox" class="checkbox-select" onclick="event.stopPropagation()" />
-          ⬇️ ${shift.title}
-          <span style="font-size: 12px; font-weight: normal; margin-left: 6px;">(oleh ${shift.creator || 'Tidak diketahui'})</span>
-        </span>
-        <span>${shift.date}</span>
-      </div>
-      ${isErrorHigh ? '<div class="shift-notice">🔴 Error tinggi! Total error melebihi 100 Kg</div>' : ''}
-      <div class="shift-details">
-        <table class="shift-table">
-          <thead>
-            <tr>
-              <th>Bahan dasar</th>
-              <th>Roll fiber</th>
-              <th>Cup plastik</th>
-              <th>Recycle</th>
-              <th>Error bahan dasar & roll fiber</th>
-              <th>Error roll fiber & cup plastik</th>
-              <th>Total error</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="${isErrorHigh ? 'highlight-error' : ''}">
-              <td>${shift.bahanDasar} Kg</td>
-              <td>${shift.rollFiber} Kg</td>
-              <td>${shift.cupPlastik} Kg</td>
-              <td>${shift.recycle} Kg</td>
-              <td>${shift.error1} Kg</td>
-              <td>${shift.error2} Kg</td>
-              <td>${shift.totalError} Kg</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    `;
-    shiftList.appendChild(container);
-  });
-}
+      savedShifts.forEach((shift) => {
+        let idString = '';
+        if (shift._id && typeof shift._id === 'object' && shift._id.buffer) {
+          idString = objectIdFromBuffer(shift._id);
+        } else if (shift._id) {
+          idString = shift._id.toString();
+        } else {
+          idString = '';
+          console.warn('Shift tanpa _id:', shift);
+        }
+
+        console.log('ID String:', idString);
+
+        const entry = document.createElement('div');
+        entry.className = 'shift-entry';
+        entry.setAttribute('data-id', idString);
+
+        const isErrorHigh = parseFloat(shift.totalError) > 100;
+
+        const header = document.createElement('div');
+        header.className = 'shift-header';
+        header.addEventListener('click', () => toggleShift(header));
+
+        const leftSpan = document.createElement('span');
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'checkbox-select';
+        checkbox.addEventListener('click', (e) => e.stopPropagation());
+
+        leftSpan.appendChild(checkbox);
+        leftSpan.insertAdjacentHTML('beforeend',
+          ` ⬇️ ${shift.title} <span style="font-size: 12px; font-weight: normal; margin-left: 6px;">(oleh ${shift.creator || 'Tidak diketahui'})</span>`
+        );
+
+        const rightSpan = document.createElement('span');
+        rightSpan.textContent = shift.date;
+
+        header.appendChild(leftSpan);
+        header.appendChild(rightSpan);
+        entry.appendChild(header);
+
+        if (isErrorHigh) {
+          const notice = document.createElement('div');
+          notice.className = 'shift-notice';
+          notice.textContent = '🔴 Error tinggi! Total error melebihi 100 Kg';
+          entry.appendChild(notice);
+        }
+
+        const details = document.createElement('div');
+        details.className = 'shift-details';
+        details.innerHTML = `
+          <table class="shift-table">
+            <thead>
+              <tr>
+                <th>Bahan dasar</th>
+                <th>Roll fiber</th>
+                <th>Cup plastik</th>
+                <th>Recycle</th>
+                <th>Error bahan dasar & roll fiber</th>
+                <th>Error roll fiber & cup plastik</th>
+                <th>Total error</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="${isErrorHigh ? 'highlight-error' : ''}">
+                <td>${shift.bahanDasar} Kg</td>
+                <td>${shift.rollFiber} Kg</td>
+                <td>${shift.cupPlastik} Kg</td>
+                <td>${shift.recycle} Kg</td>
+                <td>${shift.error1} Kg</td>
+                <td>${shift.error2} Kg</td>
+                <td>${shift.totalError} Kg</td>
+              </tr>
+            </tbody>
+          </table>
+        `;
+        entry.appendChild(details);
+
+        shiftList.appendChild(entry);
+      });
+    }
+
 
     function toggleShift(header) {
       const parent = header.parentElement;
@@ -233,19 +276,24 @@ function renderShiftList() {
       const entries = document.querySelectorAll('.shift-entry');
       const idsToDelete = [];
 
-      entries.forEach((entry, idx) => {
+      entries.forEach((entry) => {
         const checkbox = entry.querySelector('.checkbox-select');
-        if (checkbox.checked) {
-          const shift = savedShifts[idx];
-          if (shift && shift._id) idsToDelete.push(shift._id);
+        if (checkbox && checkbox.checked) {
+          // Ambil data-id sebagai string secara aman
+          const id = entry.getAttribute('data-id');
+          console.log('Menghapus ID:', id);  // Ini akan muncul string ObjectId yang benar
+          if (typeof id === 'string' && id.length === 24) {
+            idsToDelete.push(id);
+          }
         }
       });
 
       if (idsToDelete.length === 0) {
-        if (!confirm('Yakin ingin menghapus semua data shift?')) return;
-      } else {
-        if (!confirm(`Yakin ingin menghapus ${idsToDelete.length} data yang dipilih?`)) return;
+        alert('Pilih minimal satu shift yang valid untuk dihapus.');
+        return;
       }
+
+      if (!confirm(`Yakin ingin menghapus ${idsToDelete.length} shift?`)) return;
 
       const response = await window.electronAPI.deleteShifts(idsToDelete);
       if (response.success) {
@@ -256,19 +304,23 @@ function renderShiftList() {
       }
     }
 
+
+
     document.getElementById('select-all').addEventListener('change', function () {
-      const checkboxes = document.querySelectorAll('.checkbox-select');
-      checkboxes.forEach(cb => cb.checked = this.checked);
+    const checkboxes = document.querySelectorAll('.checkbox-select');
+    checkboxes.forEach(cb => cb.checked = this.checked);
     });
 
     async function exportToExcel() {
       const selectedShifts = [];
       const entries = document.querySelectorAll('.shift-entry');
 
-      entries.forEach((entry, idx) => {
+      entries.forEach((entry) => {
         const checkbox = entry.querySelector('.checkbox-select');
         if (checkbox.checked) {
-          selectedShifts.push(savedShifts[idx]);
+          const id = entry.dataset.id;
+          const shift = savedShifts.find(s => s._id === id);
+          if (shift) selectedShifts.push(shift);
         }
       });
 
@@ -312,13 +364,12 @@ function renderShiftList() {
             cell.fill = {
               type: 'pattern',
               pattern: 'solid',
-              fgColor: { argb: 'FFFFCCCC' }, // merah muda
+              fgColor: { argb: 'FFFFCCCC' },
             };
           });
         }
       });
 
-      // Auto-fit kolom
       worksheet.columns.forEach((col) => {
         let maxLength = 10;
         col.eachCell({ includeEmpty: true }, (cell) => {
