@@ -5,6 +5,7 @@ const User = require('./models/User');
 const Shift = require('./models/Shift');
 const Stock = require('./models/Stock');
 require('dotenv').config(); 
+require('./app.js');
 
 async function migrateInitialData() {
   const users = await User.find();
