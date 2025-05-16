@@ -163,80 +163,97 @@
     });
 
     const shiftList = document.getElementById('shift-list');
-    let savedShifts = JSON.parse(localStorage.getItem('shifts') || '[]');
+    let savedShifts = [];
 
-    savedShifts.forEach((shift, index) => {
-      const isErrorHigh = parseFloat(shift.totalError) > 100;
-      const container = document.createElement('div');
-      container.className = 'shift-entry';
-      container.dataset.index = index;
+window.electronAPI.getShifts().then(response => {
+  if (response.success) {
+    savedShifts = response.shifts;
+    renderShiftList();
+  } else {
+    alert('Gagal memuat data shift!');
+  }
+});
 
-      container.innerHTML = `
-        <div class="shift-header" onclick="toggleShift(this)">
-          <span>
-            <input type="checkbox" class="checkbox-select" onclick="event.stopPropagation()" />
-            ⬇️ ${shift.title}
-            <span style="font-size: 12px; font-weight: normal; margin-left: 6px;">(oleh ${shift.creator || 'Tidak diketahui'})</span>
-          </span>
-          <span>${shift.date}</span>
-        </div>
-        ${isErrorHigh ? '<div class="shift-notice">🔴 Error tinggi! Total error melebihi 100 Kg</div>' : ''}
-        <div class="shift-details">
-          <table class="shift-table">
-            <thead>
-              <tr>
-                <th>Bahan dasar</th>
-                <th>Roll fiber</th>
-                <th>Cup plastik</th>
-                <th>Recycle</th>
-                <th>Error bahan dasar & roll fiber</th>
-                <th>Error roll fiber & cup plastik</th>
-                <th>Total error</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr class="${isErrorHigh ? 'highlight-error' : ''}">
-                <td>${shift.bahanDasar} Kg</td>
-                <td>${shift.rollFiber} Kg</td>
-                <td>${shift.cupPlastik} Kg</td>
-                <td>${shift.recycle} Kg</td>
-                <td>${shift.error1} Kg</td>
-                <td>${shift.error2} Kg</td>
-                <td>${shift.totalError} Kg</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      `;
-      shiftList.appendChild(container);
-    });
+function renderShiftList() {
+  shiftList.innerHTML = ''; // clear existing
+
+  savedShifts.forEach((shift, index) => {
+    const isErrorHigh = parseFloat(shift.totalError) > 100;
+    const container = document.createElement('div');
+    container.className = 'shift-entry';
+    container.dataset.index = index;
+
+    container.innerHTML = `
+      <div class="shift-header" onclick="toggleShift(this)">
+        <span>
+          <input type="checkbox" class="checkbox-select" onclick="event.stopPropagation()" />
+          ⬇️ ${shift.title}
+          <span style="font-size: 12px; font-weight: normal; margin-left: 6px;">(oleh ${shift.creator || 'Tidak diketahui'})</span>
+        </span>
+        <span>${shift.date}</span>
+      </div>
+      ${isErrorHigh ? '<div class="shift-notice">🔴 Error tinggi! Total error melebihi 100 Kg</div>' : ''}
+      <div class="shift-details">
+        <table class="shift-table">
+          <thead>
+            <tr>
+              <th>Bahan dasar</th>
+              <th>Roll fiber</th>
+              <th>Cup plastik</th>
+              <th>Recycle</th>
+              <th>Error bahan dasar & roll fiber</th>
+              <th>Error roll fiber & cup plastik</th>
+              <th>Total error</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="${isErrorHigh ? 'highlight-error' : ''}">
+              <td>${shift.bahanDasar} Kg</td>
+              <td>${shift.rollFiber} Kg</td>
+              <td>${shift.cupPlastik} Kg</td>
+              <td>${shift.recycle} Kg</td>
+              <td>${shift.error1} Kg</td>
+              <td>${shift.error2} Kg</td>
+              <td>${shift.totalError} Kg</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    `;
+    shiftList.appendChild(container);
+  });
+}
 
     function toggleShift(header) {
       const parent = header.parentElement;
       parent.classList.toggle('active');
     }
 
-    function handleDelete() {
+    async function handleDelete() {
       const entries = document.querySelectorAll('.shift-entry');
-      const newShifts = [];
+      const idsToDelete = [];
 
       entries.forEach((entry, idx) => {
         const checkbox = entry.querySelector('.checkbox-select');
-        if (!checkbox.checked) {
-          newShifts.push(savedShifts[idx]);
+        if (checkbox.checked) {
+          const shift = savedShifts[idx];
+          if (shift && shift._id) idsToDelete.push(shift._id);
         }
       });
 
-      const selectedCount = savedShifts.length - newShifts.length;
-
-      if (selectedCount === 0) {
+      if (idsToDelete.length === 0) {
         if (!confirm('Yakin ingin menghapus semua data shift?')) return;
       } else {
-        if (!confirm(`Yakin ingin menghapus ${selectedCount} data yang dipilih?`)) return;
+        if (!confirm(`Yakin ingin menghapus ${idsToDelete.length} data yang dipilih?`)) return;
       }
 
-      localStorage.setItem('shifts', JSON.stringify(newShifts));
-      location.reload();
+      const response = await window.electronAPI.deleteShifts(idsToDelete);
+      if (response.success) {
+        alert('Shift berhasil dihapus.');
+        location.reload();
+      } else {
+        alert('Gagal menghapus shift: ' + response.message);
+      }
     }
 
     document.getElementById('select-all').addEventListener('change', function () {

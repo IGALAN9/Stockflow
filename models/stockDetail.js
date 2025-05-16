@@ -7,4 +7,4 @@ const stockDetailSchema = new mongoose.Schema({
   tanggal: { type: Date, required: true }
 });
 
-module.exports = mongoose.model('StockDetail', stockDetailSchema);
+module.exports = mongoose.models.StockDetail || mongoose.model('StockDetail', stockDetailSchema);
