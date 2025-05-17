@@ -318,9 +318,20 @@
       entries.forEach((entry) => {
         const checkbox = entry.querySelector('.checkbox-select');
         if (checkbox.checked) {
-          const id = entry.dataset.id;
-          const shift = savedShifts.find(s => s._id === id);
+          const id = entry.getAttribute('data-id');
+          console.log('ID:', id); 
+        if (typeof id === 'string' && id.length === 24) {
+                const shift = savedShifts.find((s) => {
+                  let sid = '';
+                  if (s._id && typeof s._id === 'object' && s._id.buffer) {
+                    sid = objectIdFromBuffer(s._id);
+                  } else if (typeof s._id === 'string') {
+                    sid = s._id;
+                  }
+                  return sid === id;
+                });
           if (shift) selectedShifts.push(shift);
+          }
         }
       });
 
