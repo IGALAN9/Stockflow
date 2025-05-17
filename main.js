@@ -100,9 +100,10 @@ ipcMain.handle('save-shift', async (event, shiftData) => {
     if (!stock) throw new Error('Stock document not found');
 
     stock.stock_bahan_murni -= shiftData.bahanDasar;
-    stock.stock_recycle     -= shiftData.recycle;
-    stock.stock_fiber       -= shiftData.rollFiberDipakai;
-    stock.stock_cup         -= shiftData.cupPlastik;
+    stock.stock_recycle     = stock.stock_recycle - (shiftData.recycle || 0) + (shiftData.recycleHasil || 0);
+    stock.stock_fiber       = stock.stock_fiber - (shiftData.rollFiberStock || 0) + ((shiftData.rollFiber || 0) - (shiftData.rollFiberDipakai || 0));
+    stock.stock_cup         += shiftData.cupPlastik;
+    
 
     await stock.save();
 
@@ -112,7 +113,7 @@ ipcMain.handle('save-shift', async (event, shiftData) => {
     const details = [
       { jenis: 'bahan_murni', merk: 'Shift', berat: -shiftData.bahanDasar, tanggal: today },
       { jenis: 'recycle', merk: 'Shift', berat: -shiftData.recycle, tanggal: today },
-      { jenis: 'fiber', merk: 'Shift', berat: -shiftData.rollFiberDipakai, tanggal: today },
+      { jenis: 'fiber', merk: 'Shift', berat: -shiftData.rollFiberStock, tanggal: today },
       { jenis: 'cup', merk: 'Shift', berat: -shiftData.cupPlastik, tanggal: today }
     ];
 

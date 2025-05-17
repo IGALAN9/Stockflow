@@ -6,6 +6,7 @@ const shiftSchema = new mongoose.Schema({
   date: { type: String, required: true },
   bahanDasar: { type: Number, default: 0 },
   recycle: { type: Number, default: 0 },
+  rollFiberStock: { type: Number, default: 0 },
   rollFiber: { type: Number, default: 0 },
   rollFiberDipakai: { type: Number, default: 0 },
   cupPlastik: { type: Number, default: 0 },
