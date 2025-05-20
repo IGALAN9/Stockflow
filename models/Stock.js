@@ -7,4 +7,4 @@ const stockSchema = new mongoose.Schema({
   stock_cup: { type: Number, required: true, default: 0 }
 });
 
-module.exports = mongoose.model('Stock', stockSchema);
+module.exports = mongoose.models.Stock || mongoose.model('Stock', stockSchema);

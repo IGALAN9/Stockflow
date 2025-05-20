@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Shift Input</title>
-  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="../style.css" />
   <style>
     * { box-sizing: border-box; }
     body {
@@ -277,6 +277,7 @@
         date: dateString,
         bahanDasar,
         recycle,
+        rollFiberStock,
         rollFiber: rollFiberHasil,
         rollFiberDipakai,
         cupPlastik,
@@ -286,9 +287,14 @@
         totalError
       };
 
-      const existingShifts = JSON.parse(localStorage.getItem('shifts') || '[]');
-      existingShifts.push(shiftData);
-      localStorage.setItem('shifts', JSON.stringify(existingShifts));
+    window.electronAPI.saveShift(shiftData).then(response => {
+      if (response.success) {
+        alert('Shift berhasil disimpan!');
+        window.location.href = '../Shiftlist/shiftlist.html';
+      } else {
+        alert('Gagal menyimpan shift: ' + response.message);
+      }
+    });
 
       alert('Shift berhasil disimpan!');
       window.location.href = '../Shiftlist/shiftlist.html';

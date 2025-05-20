@@ -32,3 +32,4 @@ async function createUser(username, full_name, password) {
 }
 
 createUser('DDonny', 'Tanu Sudonny', 'donny123');
+createUser('Admin', 'mimint', 'Admin');

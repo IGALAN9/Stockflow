@@ -8,3 +8,9 @@ contextBridge.exposeInMainWorld('api', {
     callback(message);
   })
 });
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  saveShift: (shiftData) => ipcRenderer.invoke('save-shift', shiftData),
+  getShifts: () => ipcRenderer.invoke('get-shifts'),
+  deleteShifts: (ids) => ipcRenderer.invoke('delete-shifts', ids),
+});
