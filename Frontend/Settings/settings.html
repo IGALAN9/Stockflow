@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Setting</title>
+  <style>
+    .container {
+      padding: 2rem;
+      max-width: 500px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 1.2rem;
+      padding: 0.5rem 1rem;
+      background-color: #4B2991;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .logout-btn {
+      background-color: #d33;
+    }
+    .message {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <button onclick="goBack()" style="margin-bottom: 1rem;">← Back to Home</button>
+    <h2>Setting</h2>
+
+    <div>
+      <label>Nama Lengkap Saat Ini:</label>
+      <p id="currentName">Loading...</p>
+      <label for="profilePicInput">Upload Foto Profil:</label>
+      <input type="file" id="profilePicInput" accept="image/*" />
+      <button onclick="changeProfilePicture()">Ganti Foto</button>
+    </div>
+
+    <div>
+      <label for="newName">Ganti Nama Lengkap:</label>
+      <input type="text" id="newName" placeholder="Nama baru..." />
+      <button onclick="changeFullName()">Simpan Nama</button>
+    </div>
+    <hr>
+
+    <button id="logout-btn">Logout</button>
+
+    <p class="message" id="message"></p>
+  </div>
+
+<script>
+  function goBack() {
+  window.location.href = '../index.html';
+}
+  const { getCurrentUser, changeFullName, logout } = window.api;
+
+  let currentUser = null;
+
+  async function loadUser() {
+    const user = await getCurrentUser();
+    if (user) {
+      document.getElementById('currentName').textContent = user.fullName;
+      currentUser = user;
+    } else {
+      document.getElementById('message').textContent = 'Gagal memuat data user.';
+    }
+  }
+
+  async function changeProfilePicture() {
+    const fileInput = document.getElementById('profilePicInput');
+    const file = fileInput.files[0];
+    if (!file) return alert("Pilih file gambar terlebih dahulu!");
+    
+    const buffer = await file.arrayBuffer();
+    const fileName = `${Date.now()}_${file.name}`;
+
+    const result = await window.api.updateProfilePicture({
+      userID: currentUser.id,
+      buffer: Array.from(new Uint8Array(buffer)),
+      fileName
+    });
+    
+    if (result.success) {
+      alert("Foto profil berhasil diubah!");
+    } else {
+      alert("Gagal mengubah foto profil.");
+    }
+  }
+
+  async function changeNameHandler() {
+    const newName = document.getElementById('newName').value.trim();
+    if (!newName) return alert('Nama baru tidak boleh kosong.');
+
+    const res = await changeFullName({
+      userID: currentUser.id,
+      newFullName: newName
+    });
+
+    if (res.success) {
+      document.getElementById('message').textContent = 'Nama berhasil diubah!';
+      document.getElementById('currentName').textContent = newName;
+    } else {
+      document.getElementById('message').textContent = 'Gagal mengubah nama.';
+    }
+  }
+
+  document.getElementById('logout-btn').addEventListener('click', async () => {
+    const result = await logout();
+    if (result.success) {
+      window.location.href = '../Login/login.html';
+    } else {
+      alert('Logout failed! ' + result.message);
+    }
+  });
+
+  document.querySelector('button[onclick="changeFullName()"]').onclick = changeNameHandler;
+
+  loadUser();
+</script>
+
+</body>
+</html>

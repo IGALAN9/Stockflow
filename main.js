@@ -10,6 +10,10 @@ const { v4: uuidv4 } = require('uuid');
 const { connect } = require('http2');
 const Stock = require('./models/Stock');
 const StockDetail = require('./models/StockDetail');
+const { profile } = require('console');
+global.loggedInUser = null;
+const fs = require('fs');
+const os = require('os');
 require('dotenv').config(); 
 require('./app.js');
 
@@ -55,12 +59,22 @@ app.whenReady().then(async () => {
   await createWindow();
 });
 
+ipcMain.handle('getCurrentUser', ()=> {
+  return global.loggedInUser || null;
+});
+
 ipcMain.handle('login', async(event, {username, password}) => {
   const user = await User.findOne({username});
   if(user) {
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash); 
     if (isPasswordValid){
-      return { success: true, username: user.username };
+      global.loggedInUser = {
+        id: user._id.toString(),
+        username: user.username,
+        fullName: user.full_name,
+        profile_photo : user.profile_photo
+      };
+      return { success: true, user:global.loggedInUser };
     } 
     else {
       return { success: false, message: 'Incorrect password!' };
@@ -152,5 +166,54 @@ ipcMain.handle('delete-shifts', async (event, shiftIds) => {
   } catch (error) {
     console.error('Error deleting shifts:', error);
     return { success: false, message: error.message };
+  }
+});
+
+ipcMain.handle('updateProfilePicture', async (event, { userID, buffer, fileName }) => {
+  try {
+    const saveDir = path.join(os.homedir(), 'Stockflow', 'profile_photos');
+    console.log('Save directory:', saveDir);
+
+    if (!fs.existsSync(saveDir)) fs.mkdirSync(saveDir, { recursive: true });
+    console.log('Folder created:', saveDir);
+
+    const savePath = path.join(saveDir, fileName);
+    console.log('Saving file to:', savePath);
+
+    fs.writeFileSync(savePath, Buffer.from(buffer));
+    console.log('File saved');
+
+    await User.updateOne({ _id: userID }, { $set: { profile_photo: savePath } });
+    console.log('DB updated with new profile photo path');
+
+    return { success: true };
+  } catch (err) {
+    console.error('Error update profile picture:', err);
+    return { success: false, message: err.message };
+  }
+});
+
+ipcMain.handle('changeFullName', async (event,{ userID, newFullName }) => {
+  try{
+    const user = await User.findById(userID);
+    if (!user) return {success: false, message: 'User not found'};
+
+    user.full_name = newFullName;
+    await user.save();
+
+    return {success: true, message : 'Full name updated'};
+
+  } catch (error){
+    console.error('Change full name error', error);
+    return {success: false, message : 'Server error'};
+  }
+});
+
+ipcMain.handle('logout', async (event) => {
+  try {
+    global.loggedInUser = null;
+    return { success: true };
+  } catch (error) {
+    return { success: false, message: 'Logout failed' };
   }
 });
