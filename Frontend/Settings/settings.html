@@ -102,6 +102,7 @@
     
     if (result.success) {
       alert("Foto profil berhasil diubah!");
+      await window.api.refreshCurrentUser();
     } else {
       alert("Gagal mengubah foto profil.");
     }
@@ -119,6 +120,8 @@
     if (res.success) {
       document.getElementById('message').textContent = 'Nama berhasil diubah!';
       document.getElementById('currentName').textContent = newName;
+
+      await window.api.refreshCurrentUser();
     } else {
       document.getElementById('message').textContent = 'Gagal mengubah nama.';
     }

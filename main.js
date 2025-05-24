@@ -5,6 +5,7 @@ const connectToDB = require('./db');
 const User = require('./models/User');
 const Shift = require('./models/Shift');
 const { ipcMain } = require('electron');
+const { getUserById } = require('./models/User.js');
 const bcrypt = require('bcrypt');
 const { v4: uuidv4 } = require('uuid');
 const { connect } = require('http2');
@@ -59,7 +60,8 @@ app.whenReady().then(async () => {
   await createWindow();
 });
 
-ipcMain.handle('getCurrentUser', ()=> {
+ipcMain.handle('getCurrentUser', async (event)=> {
+  const win = BrowserWindow.fromWebContents(event.sender);
   return global.loggedInUser || null;
 });
 
@@ -68,12 +70,16 @@ ipcMain.handle('login', async(event, {username, password}) => {
   if(user) {
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash); 
     if (isPasswordValid){
-      global.loggedInUser = {
+      const win = BrowserWindow.fromWebContents(event.sender);
+      const sessionUser = {
         id: user._id.toString(),
         username: user.username,
         fullName: user.full_name,
         profile_photo : user.profile_photo
       };
+
+      global.loggedInUser = sessionUser;
+      win.sessionUser = sessionUser;
       return { success: true, user:global.loggedInUser };
     } 
     else {
@@ -207,6 +213,27 @@ ipcMain.handle('changeFullName', async (event,{ userID, newFullName }) => {
     console.error('Change full name error', error);
     return {success: false, message : 'Server error'};
   }
+});
+
+ipcMain.handle('refresh-current-user', async (event) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  const sessionUser = win?.sessionUser;
+
+  if (!sessionUser || !sessionUser.id) return null;
+
+  const freshUser = await User.findById(sessionUser.id); 
+
+  const updated = {
+    id: freshUser._id.toString(),
+    username: freshUser.username,
+    fullName: freshUser.full_name,
+    profile_photo: freshUser.profile_photo
+  };
+
+  win.sessionUser = updated;
+  global.loggedInUser = updated; 
+
+  return updated;
 });
 
 ipcMain.handle('logout', async (event) => {
