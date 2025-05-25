@@ -348,7 +348,7 @@
 
       worksheet.addRow([
         'Judul Shift', 'Nama', 'Tanggal', 'Bahan Dasar (Kg)', 'Roll Fiber (Kg)',
-        'Cup Plastik (Kg)', 'Recycle (Kg)', 'Error 1 (Kg)', 'Error 2 (Kg)', 'Total Error (Kg)'
+        'Cup Plastik (Kg)', 'Recycle (Kg)', 'Error 1 (Kg)', 'Error 2 (Kg)', 'Total Error (Kg)', 'Notes'
       ]);
 
       selectedShifts.forEach((shift) => {
@@ -371,6 +371,7 @@
           shift.error1 || '',
           shift.error2 || '',
           shift.totalError || '',
+          shift.notes || ''
         ]);
 
         if (totalError > 100) {

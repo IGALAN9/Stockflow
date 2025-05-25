@@ -141,7 +141,7 @@
   </header>
 
   <div class="shift-header">
-    <input id="creator-name" class="name-input" type="text" placeholder="Name..." />
+    <span id="creator-name" class="name-input">Nama User</span>
     <div class="title-wrapper">
       <input id="shift-title" class="title-input" type="text" placeholder="Shift Title..." />
     </div>
@@ -153,33 +153,33 @@
       <h3>STOCK GLOBAL DIPAKAI</h3>
       <div class="form-group">
         <label>Bahan dasar</label>
-        <input type="text" id="bahan-dasar" placeholder="Kg" />
+        <input type="number" id="bahan-dasar" placeholder="Kg" />
       </div>
       <div class="form-group">
         <label>Recycle</label>
-        <input type="text" id="recycle-stock" placeholder="Kg" />
+        <input type="number" id="recycle-stock" placeholder="Kg" />
       </div>
       <div class="form-group">
         <label>Roll fiber</label>
-        <input type="text" id="roll-fiber-stock" placeholder="Kg" />
+        <input type="number" id="roll-fiber-stock" placeholder="Kg" />
       </div>
 
       <h3 style="margin-top: 30px;">HASIL PRODUKSI</h3>
       <div class="form-group">
         <label>Roll fiber</label>
-        <input type="text" id="roll-fiber-hasil" placeholder="Kg" />
+        <input type="number" id="roll-fiber-hasil" placeholder="Kg" />
       </div>
       <div class="form-group">
         <label>Roll fiber dipakai</label>
-        <input type="text" id="roll-fiber-dipakai" placeholder="Kg" />
+        <input type="number" id="roll-fiber-dipakai" placeholder="Kg" />
       </div>
       <div class="form-group">
         <label>Cup plastik</label>
-        <input type="text" id="cup-plastik" placeholder="Kg" />
+        <input type="number" id="cup-plastik" placeholder="Kg" />
       </div>
       <div class="form-group">
         <label>Recycle</label>
-        <input type="text" id="recycle-hasil" placeholder="Kg" />
+        <input type="number" id="recycle-hasil" placeholder="Kg" />
       </div>
     </div>
 
@@ -310,7 +310,7 @@
       console.log("USER DATA:", user);
       if (user){
         if(user.fullName){
-          document.getElementById('creator-name').value = user.fullName;
+          document.getElementById('creator-name').textContent = user.fullName;
           window.userId = user.id;        
           window.creatorName = user.fullName;  
         }
