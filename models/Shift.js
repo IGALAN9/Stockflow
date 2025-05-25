@@ -13,7 +13,8 @@ const shiftSchema = new mongoose.Schema({
   recycleHasil: { type: Number, default: 0 },
   error1: { type: Number, default: 0 },
   error2: { type: Number, default: 0 },
-  totalError: { type: Number, default: 0 }
+  totalError: { type: Number, default: 0 },
+  notes: { type: String, required: false }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Shift', shiftSchema);

@@ -203,6 +203,10 @@
           <strong>Total error</strong>
           <strong id="total-error">XX Kg</strong>
         </div>
+        <div class="form-group">
+        <label>Notes</label>
+        <input type="text" id="notes" placeholder="Masukan Notes" />
+      </div>
       </div>
     </div>
   </div>
@@ -266,6 +270,7 @@
       const error1 = Math.abs((bahanDasar + recycle) - rollFiberHasil);
       const error2 = Math.abs((rollFiberStock + rollFiberDipakai) - cupPlastik);
       const totalError = error1 + error2;
+      const notes = document.getElementById('notes').value.trim();
 
       const dateString = new Date().toLocaleDateString('en-GB', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -284,7 +289,8 @@
         recycleHasil,
         error1,
         error2,
-        totalError
+        totalError,
+        notes: notes || '-'
       };
 
     window.electronAPI.saveShift(shiftData).then(response => {
@@ -296,9 +302,18 @@
       }
     });
 
-      alert('Shift berhasil disimpan!');
-      window.location.href = '../Shiftlist/shiftlist.html';
     });
+
+    if (window.api && window.api.getCurrentUser) {
+    window.api.getCurrentUser().then(user => {
+      console.log("USER DATA:", user);
+      if (user){
+        if(user.fullName){
+          document.getElementById('creator-name').value = user.fullName;
+        }
+      } 
+  });
+}
 
     calculateError();
   </script>
