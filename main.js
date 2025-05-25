@@ -149,7 +149,7 @@ ipcMain.handle('save-shift', async (event, shiftData) => {
 
 ipcMain.handle('get-shifts', async () => {
   try {
-    const shifts = await Shift.find().sort({ createdAt: -1 }).lean();
+    const shifts = await Shift.find().populate('creator').sort({ createdAt: -1 }).lean();
     return { success: true, shifts };
   } catch (error) {
     console.error('Error fetching shifts:', error);

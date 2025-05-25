@@ -256,7 +256,7 @@
 
     const saveButton = document.querySelector('.btn-purple');
     saveButton.addEventListener('click', () => {
-      const creator = document.getElementById('creator-name').value.trim();
+      const creatorId = window.userId;
       const title = document.getElementById('shift-title').value.trim();
 
       const bahanDasar = parseKg(document.getElementById('bahan-dasar').value);
@@ -277,7 +277,8 @@
       });
 
       const shiftData = {
-        creator: creator || 'No Name',
+        user: window.userId,
+        creator:  window.creatorName || 'No Name',
         title: title || 'Untitled Shift',
         date: dateString,
         bahanDasar,
@@ -310,6 +311,8 @@
       if (user){
         if(user.fullName){
           document.getElementById('creator-name').value = user.fullName;
+          window.userId = user.id;        
+          window.creatorName = user.fullName;  
         }
       } 
   });
