@@ -12,18 +12,16 @@
     <!-- Sidebar -->
     <aside class="sidebar">
       <div class="profile">
-        <div class="avatar"></div>
-        <p class="profile-label">USER PROFILE</p>
-        <p class="profile-id">ID : 14253658613</p>
+        <div class="avatar">
+          <img id="avatar-img" src = "" alt="Profile Picture" style ="width: 80px; height: 80px; border-radius: 50%; object-fit: cover;" />
+        </div>
+        <div class = "profile-info">
+          <p class="profile-label" id = "profile-name"> USER PROFILE</p>
+          <p class="profile-id" id ="profile-id"> ID : 14253658613</p>
+        </div>
       </div>
       <nav class="menu">
-        <a href="#">
-          <div class="menu-icon-box">
-            <img src="https://img.icons8.com/ios-filled/50/user.png"/>
-          </div>
-          My Account
-        </a>
-        <a href="#">
+        <a href="./Settings/settings.html">
           <div class="menu-icon-box">
             <img src="https://img.icons8.com/ios-filled/50/settings.png"/>
           </div>
@@ -115,7 +113,24 @@
     const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     const today = new Date().toLocaleDateString('en-US', options);
     dateElement.textContent = today;
+
+  if (window.api && window.api.getCurrentUser) {
+    window.api.getCurrentUser().then(user => {
+      console.log("USER DATA:", user);
+      if (user){
+        if(user.profile_photo){
+          document.getElementById('avatar-img').src = `file://${user.profile_photo}`;
+        }
+        if(user.fullName){
+          document.getElementById('profile-name').textContent = user.fullName;
+        }
+        if (user.id){
+          document.getElementById('profile-id').textContent = `ID: ${user.id}`;
+        }
+      } 
   });
+}
+}); 
 
   </script>
 </body>

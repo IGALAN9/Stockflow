@@ -30,6 +30,5 @@ async function createUser(username, full_name, password) {
     process.exit(); 
   }
 }
-
-createUser('DDonny', 'Tanu Sudonny', 'donny123');
 createUser('Admin', 'mimint', 'Admin');
+createUser('DDonny', 'Tanu Sudonny', 'donny123');
