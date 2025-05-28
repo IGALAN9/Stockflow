@@ -66,6 +66,14 @@ body, html {
   height: 50px;
 }
 
+.title {
+  display: flex;
+  font-weight: bold;
+  align-items: center;
+  margin: 20px 0;
+  margin-left: 8%;
+  padding: 10px;
+}
 .input-group {
   display: flex;
   align-items: center;
