@@ -2,18 +2,6 @@ const express = require('express');
 const router = express.Router();
 const Stock = require('../models/Stock');
 const StockDetail = require('../models/stockDetail');
-const { addStock } = require('../services/stockService');
-
-// router.post('/add', async (req, res) => {
-//   const { stockType, amount } = req.body;
-
-//   try {
-//     const updatedStock = await addStock(stockType, amount);
-//     res.json(updatedStock);
-//   } catch (error) {
-//     res.status(400).json({ message: error.message });
-//   }
-// });
 
 router.get('/stock', async (req, res) => {
   try {
