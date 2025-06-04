@@ -10,6 +10,7 @@
   "author": "Galang",
   "license": "ISC",
   "devDependencies": {
+    "@electron/packager": "^18.3.6",
     "electron": "^36.3.1"
   },
   "dependencies": {

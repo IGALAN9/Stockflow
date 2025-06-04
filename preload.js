@@ -19,3 +19,25 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getShifts: () => ipcRenderer.invoke('get-shifts'),
   deleteShifts: (ids) => ipcRenderer.invoke('delete-shifts', ids),
 });
+
+contextBridge.exposeInMainWorld('configAPI', {
+  getConfig: () => {
+    return new Promise((resolve) => {
+      ipcRenderer.once('envReply', (event, arg) => {
+        resolve(arg.parsed);
+      });
+      ipcRenderer.send('invokeEnv');
+    });
+  }
+});
+
+contextBridge.exposeInMainWorld('debugAPI', {
+  getLog: () => {
+    return new Promise((resolve) => {
+      ipcRenderer.once('debug-log-reply', (event, log) => {
+        resolve(log);
+      });
+      ipcRenderer.send('debug-log');
+    });
+  }
+});

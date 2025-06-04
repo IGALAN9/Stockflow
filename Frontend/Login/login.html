@@ -33,11 +33,20 @@
   <script>
     const form = document.getElementById('login-form');
     const errorDiv = document.getElementById('error-message');
+    
     form.addEventListener('submit', async(e) => {
       e.preventDefault();
 
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
+      window.debugAPI.getLog().then(log => {
+        console.log("MONGO_URI from main process:", log.mongo);
+      });
+
+      window.configAPI.getConfig().then(config => {
+        console.log('ENV config:', config);
+      });
+      
 
       const result = await window.api.login(username, password);
 
