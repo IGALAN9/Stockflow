@@ -15,6 +15,7 @@ const { profile } = require('console');
 global.loggedInUser = null;
 const fs = require('fs');
 const os = require('os');
+const config = require('./config.json');
 require('dotenv').config(); 
 require('./app.js');
 
@@ -244,4 +245,8 @@ ipcMain.handle('logout', async (event) => {
   } catch (error) {
     return { success: false, message: 'Logout failed' };
   }
+});
+
+ipcMain.on('invokeEnv', (event) => {
+  event.reply('envReply', { parsed: config });
 });
