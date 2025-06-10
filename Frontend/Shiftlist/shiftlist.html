@@ -181,6 +181,11 @@
       return Array.from(buffer).map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
+    function editShift(id) {
+      localStorage.setItem('editShiftId', id);
+      window.location.href = '../EditShift/editshift.html?edit=true';
+    }
+
     function renderShiftList() {
       shiftList.innerHTML = '';
 
@@ -262,6 +267,11 @@
           <div style="margin-top: 10px;">
               <strong>Notes:</strong> ${shift.notes || '-'}
           </div>
+           <div style="margin-top: 10px; text-align: right;">
+    <button onclick="editShift('${idString}')" style="padding: 6px 12px; border-radius: 6px; background: #3b82f6; color: white; border: none; cursor: pointer;">
+      ✏️ Edit
+    </button>
+  </div>
         `;
         entry.appendChild(details);
 

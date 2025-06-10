@@ -16,6 +16,7 @@ contextBridge.exposeInMainWorld('api', {
 
 contextBridge.exposeInMainWorld('electronAPI', {
   saveShift: (shiftData) => ipcRenderer.invoke('save-shift', shiftData),
+  updateShift: (data) => ipcRenderer.invoke('update-shift', data),
   getShifts: () => ipcRenderer.invoke('get-shifts'),
   deleteShifts: (ids) => ipcRenderer.invoke('delete-shifts', ids),
 });
