@@ -159,11 +159,10 @@ ipcMain.handle('update-shift', async (event, shiftData) => {
     const stock = await Stock.findOne();
     if (!stock) return { success: false, message: 'Stok global tidak ditemukan' };
 
-    // Hitung selisih
     const selisihBahanDasar = (oldShift.bahanDasar) - (shiftData.bahanDasar);
     const selisihRecycle    = ((oldShift.recycle) - (shiftData.recycle)) - ((oldShift.recycleHasil) - (shiftData.recycleHasil));
     const selisihFiber      = (((oldShift.rollFiberStock) - (shiftData.rollFiberStock)) - ((oldShift.rollFiber) - (shiftData.rollFiber)) - ((oldShift.rollFiberDipakai) - (shiftData.rollFiberDipakai)));
-    const selisihCup        = (shiftData.cupPlastik) - (oldShift.cupPlastik); // karena cup hasil produksi
+    const selisihCup        = (shiftData.cupPlastik) - (oldShift.cupPlastik); 
 
     stock.stock_bahan_murni += selisihBahanDasar;
     stock.stock_recycle     += selisihRecycle;
@@ -172,11 +171,9 @@ ipcMain.handle('update-shift', async (event, shiftData) => {
 
     await stock.save();
 
-    // Update shift
     const updated = await Shift.findByIdAndUpdate(id, shiftData, { new: true }).lean();
     if (!updated) return { success: false, message: 'Gagal mengupdate shift' };
 
-    // Simpan log perubahan
     const today = new Date();
     const detailLog = [
       { jenis: 'bahan_murni', merk: 'EditShift', berat: selisihBahanDasar, tanggal: today },
