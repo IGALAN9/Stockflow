@@ -15,6 +15,7 @@ const { profile } = require('console');
 global.loggedInUser = null;
 const fs = require('fs');
 const os = require('os');
+const config = require('./config.json');
 require('dotenv').config(); 
 require('./app.js');
 
@@ -116,7 +117,7 @@ ipcMain.handle('save-shift', async (event, shiftData) => {
     const newShift = new Shift(shiftData);
     await newShift.save();
 
-    // 🔽 Update stock total
+
     const stock = await Stock.findOne();
     if (!stock) throw new Error('Stock document not found');
 
@@ -128,7 +129,7 @@ ipcMain.handle('save-shift', async (event, shiftData) => {
 
     await stock.save();
 
-    // 📝 Simpan histori perubahan ke StockDetail
+
     const today = new Date();
 
     const details = [
@@ -146,6 +147,56 @@ ipcMain.handle('save-shift', async (event, shiftData) => {
     return { success: false, message: 'Failed to save shift or update stock', error: error.message };
   }
 });
+
+ipcMain.handle('update-shift', async (event, shiftData) => {
+  try {
+    if (!shiftData._id) return { success: false, message: 'ID shift tidak ditemukan' };
+
+    const id = new mongoose.Types.ObjectId(shiftData._id);
+    const oldShift = await Shift.findById(id).lean();
+    if (!oldShift) return { success: false, message: 'Shift lama tidak ditemukan' };
+
+    const stock = await Stock.findOne();
+    if (!stock) return { success: false, message: 'Stok global tidak ditemukan' };
+
+    // Hitung selisih
+    const selisihBahanDasar = (oldShift.bahanDasar) - (shiftData.bahanDasar);
+    const selisihRecycle    = ((oldShift.recycle) - (shiftData.recycle)) - ((oldShift.recycleHasil) - (shiftData.recycleHasil));
+    const selisihFiber      = (((oldShift.rollFiberStock) - (shiftData.rollFiberStock)) - ((oldShift.rollFiber) - (shiftData.rollFiber)) - ((oldShift.rollFiberDipakai) - (shiftData.rollFiberDipakai)));
+    const selisihCup        = (shiftData.cupPlastik) - (oldShift.cupPlastik); // karena cup hasil produksi
+
+    stock.stock_bahan_murni += selisihBahanDasar;
+    stock.stock_recycle     += selisihRecycle;
+    stock.stock_fiber       += selisihFiber;
+    stock.stock_cup         += selisihCup;
+
+    await stock.save();
+
+    // Update shift
+    const updated = await Shift.findByIdAndUpdate(id, shiftData, { new: true }).lean();
+    if (!updated) return { success: false, message: 'Gagal mengupdate shift' };
+
+    // Simpan log perubahan
+    const today = new Date();
+    const detailLog = [
+      { jenis: 'bahan_murni', merk: 'EditShift', berat: selisihBahanDasar, tanggal: today },
+      { jenis: 'recycle', merk: 'EditShift', berat: selisihRecycle, tanggal: today },
+      { jenis: 'fiber', merk: 'EditShift', berat: selisihFiber, tanggal: today },
+      { jenis: 'cup', merk: 'EditShift', berat: selisihCup, tanggal: today }
+    ];
+    await StockDetail.insertMany(detailLog);
+
+    console.log('📥 Shift berhasil diupdate dan log dicatat.');
+    return { success: true, message: 'Shift dan stok berhasil diperbarui', data: updated };
+
+  } catch (err) {
+    console.error('❌ Error update shift:', err);
+    return { success: false, message: 'Gagal update shift', error: err.message };
+  }
+});
+
+
+
 
 
 ipcMain.handle('get-shifts', async () => {
@@ -244,4 +295,8 @@ ipcMain.handle('logout', async (event) => {
   } catch (error) {
     return { success: false, message: 'Logout failed' };
   }
+});
+
+ipcMain.on('invokeEnv', (event) => {
+  event.reply('envReply', { parsed: config });
 });
