@@ -2,197 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Edit Shift</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../style.css" />
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f9f9f9;
-      overflow-x: hidden;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .topbar { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; background: white; 
-      padding: 10px 20px; 
-      border-bottom: 1px solid #e5e7eb; 
-    }
-    .menu-tabs { 
-      display: flex; 
-      gap: 8px; 
-    }
-    .tab {
-      background: none;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-      padding: 5px 10px;
-      font-weight: bold;
-      color: #000;
-      border-bottom: 2px solid transparent;
-    }
-    .tab.active {
-      color: #4B7CEB;
-      border-color: #4B7CEB;
-    }
-    .tab:hover {
-      text-decoration: underline;
-      text-decoration-color: #007bff;
-    }
-    .shift-header {
-      position: relative;
-      margin: 20px 0;
-      padding: 0 20px;
-    }
-    .shift-header .name-input {
-      font-size: 18px;
-      width: 160px;
-      border: none;
-      border-bottom: 2px solid #ccc;
-      background: transparent;
-      outline: none;
-    }
-    .shift-header .title-wrapper {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .shift-header .title-input {
-      font-size: 24px;
-      text-align: center;
-      width: 200px;
-      border: none;
-      border-bottom: 2px solid #ccc;
-      background: transparent;
-      outline: none;
-    }
-    .shift-container { 
-      flex: 1; 
-      display: flex; 
-      background: white; 
-      border: 1px solid #ddd; 
-      margin: 0 20px; 
-      border-radius: 10px; 
-      overflow: hidden; 
-      min-height: 450px; 
-    }
-    .section { 
-      flex: 1; 
-      padding: 20px; 
-      overflow-y: auto; 
-    }
-    .form-group { 
-      margin-bottom: 15px; 
-    }
-    .form-group label { 
-      display: block; 
-      font-size: 14px; 
-      margin-bottom: 5px; 
-      color: #374151; 
-    }
-    .form-group input { 
-      width: 70%; 
-      padding: 8px; 
-      border: 1px solid #aaa; 
-      border-radius: 6px; 
-      font-size: 14px; 
-    }
-    .error-block { 
-      margin-top: 20px; 
-    }
-    .error-line { 
-      display: flex; 
-      justify-content: space-between; 
-      padding: 8px 0; 
-      font-size: 14px; 
-    }
-    .notes {
-      margin-bottom: 15px; 
-    }
-    .notes label{
-      display: block; 
-      font-size: 14px; 
-      margin-bottom: 5px;
-      margin-top: 38%;
-      color: #374151; 
-    }
-    .notes input { 
-      width: 70%; 
-      padding: 8px; 
-      border: 1px solid #aaa; 
-      border-radius: 6px; 
-      font-size: 14px; 
-    }
-    .save-button { 
-      margin: 20px; 
-      text-align: right; 
-    }
-    .btn-purple { 
-      background: #6D28D9; 
-      color: white; 
-      padding: 10px 20px; 
-      border: none; 
-      border-radius: 10px; 
-      font-size: 16px; 
-      cursor: pointer; 
-    }
-  </style>
 </head>
-<body>
-  <header class="topbar">
-    <div class="menu-tabs">
-      <button class="tab" onclick="location.href='../Shiftlist/shiftlist.html'">⬅️ Kembali</button>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Topbar -->
+  <header class="topbar flex justify-between items-center bg-white px-5 py-2 border-b border-gray-200">
+    <div class="menu-tabs flex gap-2">
+      <button class="tab text-black font-bold px-2 py-1 border-b-2 border-transparent hover:underline" onclick="location.href='../Shiftlist/shiftlist.html'">⬅️ Kembali</button>
     </div>
-    <div class="top-right">
-      <div class="date" id="today-date"></div>
-    </div>
+    <div class="top-right text-sm text-gray-600" id="today-date"></div>
   </header>
 
-  <div class="shift-header">
-    <span id="creator-name" class="name-input">Nama User</span>
-    <div class="title-wrapper">
-      <input id="shift-title" class="title-input" type="text" placeholder="Shift Title..." />
+  <!-- Header -->
+  <div class="shift-header relative my-5 px-5">
+    <span id="creator-name" class="text-lg border-b-2 border-gray-300 w-40 inline-block">Nama User</span>
+    <div class="title-wrapper absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <input id="shift-title" class="text-2xl text-center w-52 border-b-2 border-gray-300 outline-none bg-transparent" type="text" placeholder="Shift Title..." />
     </div>
   </div>
 
-  <div class="shift-container">
-    <div class="section">
-      <h3>STOCK GLOBAL DIPAKAI</h3>
-      <div class="form-group"><label>Bahan dasar</label><input type="number" id="bahan-dasar" placeholder="Kg" /></div>
-      <div class="form-group"><label>Recycle</label><input type="number" id="recycle-stock" placeholder="Kg" /></div>
-      <div class="form-group"><label>Roll fiber</label><input type="number" id="roll-fiber-stock" placeholder="Kg" /></div>
+  <!-- Container -->
+  <div class="shift-container flex bg-white border border-gray-300 mx-5 rounded-xl overflow-hidden min-h-[450px]">
+    <!-- Left -->
+    <div class="section w-1/2 p-5 overflow-y-auto">
+      <h3 class="text-lg font-semibold mb-4">STOCK GLOBAL DIPAKAI</h3>
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Bahan dasar</label>
+        <input type="number" id="bahan-dasar" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
+      </div>
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Recycle</label>
+        <input type="number" id="recycle-stock" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
+      </div>
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Roll fiber</label>
+        <input type="number" id="roll-fiber-stock" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
+      </div>
 
-      <h3 style="margin-top: 30px;">HASIL PRODUKSI</h3>
-      <div class="form-group"><label>Roll fiber</label><input type="number" id="roll-fiber-hasil" placeholder="Kg" /></div>
-      <div class="form-group"><label>Roll fiber dipakai</label><input type="number" id="roll-fiber-dipakai" placeholder="Kg" /></div>
-      <div class="form-group"><label>Cup plastik</label><input type="number" id="cup-plastik" placeholder="Kg" /></div>
-      <div class="form-group"><label>Recycle</label><input type="number" id="recycle-hasil" placeholder="Kg" /></div>
+      <h3 class="text-lg font-semibold mt-8 mb-4">HASIL PRODUKSI</h3>
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Roll fiber</label>
+        <input type="number" id="roll-fiber-hasil" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
+      </div>
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Roll fiber dipakai</label>
+        <input type="number" id="roll-fiber-dipakai" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
+      </div>
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Cup plastik</label>
+        <input type="number" id="cup-plastik" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
+      </div>
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Recycle hasil</label>
+        <input type="number" id="recycle-hasil" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
+      </div>
     </div>
 
-    <div class="divider" style="width:1px; background:#ddd;"></div>
+    <!-- Divider -->
+    <div class="w-[1px] bg-gray-300"></div>
 
-    <div class="section">
-      <h3>ERROR</h3>
-      <div class="error-block">
-        <div class="error-line"><span>(Bahan Dasar + Recycle) - Roll Fiber (hasil)</span><span id="error-1">XX Kg</span></div>
-        <div class="error-line"><span>(Roll Fiber + Dipakai) - Cup Plastik</span><span id="error-2">XX Kg</span></div>
-        <hr />
-        <div class="error-line"><strong>Total error</strong><strong id="total-error">XX Kg</strong></div>
-        <div class="notes"><label>Notes</label><input type="text" id="notes" placeholder="Masukan Notes" /></div>
+    <!-- Right -->
+    <div class="section w-1/2 p-5 overflow-y-auto">
+      <h3 class="text-lg font-semibold mb-4">ERROR</h3>
+      <div class="space-y-3 text-sm text-gray-700">
+        <div class="flex justify-between border-b pb-1">
+          <span>(Bahan Dasar + Recycle) - Roll Fiber (hasil)</span>
+          <span id="error-1" class="font-medium">XX Kg</span>
+        </div>
+        <div class="flex justify-between border-b pb-1">
+          <span>(Roll Fiber + Dipakai) - Cup Plastik</span>
+          <span id="error-2" class="font-medium">XX Kg</span>
+        </div>
+        <div class="flex justify-between border-t pt-2 font-semibold text-black">
+          <span>Total error</span>
+          <span id="total-error">XX Kg</span>
+        </div>
+        <div class="mt-8">
+          <label class="block mb-1 text-sm">Notes</label>
+          <input type="text" id="notes" placeholder="Masukan Notes" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="save-button"><button class="btn-purple">💾 Update Shift</button></div>
+  <!-- Save Button -->
+  <div class="text-right px-5 py-4">
+    <button class="bg-purple-700 text-white px-5 py-2 rounded-lg text-base font-semibold hover:bg-purple-800 transition" onclick="updateShift()">💾 Update Shift</button>
+  </div>
 
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center hidden z-50">
+    <div class="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full text-center">
+      <p id="modal-message" class="text-lg font-semibold mb-4"></p>
+      <button id="modal-ok" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">OK</button>
+    </div>
+  </div>
+
+  <!-- Script -->
   <script>
     document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-GB', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -231,11 +141,12 @@
       if (!editId) return;
 
       const response = await window.electronAPI.getShifts();
-      if (!response.success) return alert('Gagal memuat shift.');
+      if (!response.success) return showModal('Gagal memuat shift.');
 
       const shift = response.shifts.find(s => {
         if (s._id && typeof s._id === 'object' && s._id.buffer) {
-          const id = Array.from(new Uint8Array(Object.values(s._id.buffer))).map(b => b.toString(16).padStart(2, '0')).join('');
+          const id = Array.from(new Uint8Array(Object.values(s._id.buffer)))
+            .map(b => b.toString(16).padStart(2, '0')).join('');
           return id === editId;
         } else if (typeof s._id === 'string') {
           return s._id === editId;
@@ -243,31 +154,29 @@
         return false;
       });
 
-      if (!shift) return alert('Shift tidak ditemukan.');
+      if (!shift) return showModal('Shift tidak ditemukan.');
 
-            const safeSet = (id, value) => {
+      const safeSet = (id, value) => {
         document.getElementById(id).value = (typeof value === 'number') ? value : 0;
-        };
+      };
 
-        document.getElementById('shift-title').value = shift.title || '';
-        document.getElementById('creator-name').textContent = shift.creator || 'Tidak diketahui';
-        safeSet('bahan-dasar', shift.bahanDasar);
-        safeSet('recycle-stock', shift.recycle);
-        safeSet('roll-fiber-stock', shift.rollFiberStock);
-        safeSet('roll-fiber-hasil', shift.rollFiber);
-        safeSet('roll-fiber-dipakai', shift.rollFiberDipakai);
-        safeSet('cup-plastik', shift.cupPlastik);
-        safeSet('recycle-hasil', shift.recycleHasil);
-        document.getElementById('notes').value = shift.notes || '-';
+      document.getElementById('shift-title').value = shift.title || '';
+      document.getElementById('creator-name').textContent = shift.creator || 'Tidak diketahui';
+      safeSet('bahan-dasar', shift.bahanDasar);
+      safeSet('recycle-stock', shift.recycle);
+      safeSet('roll-fiber-stock', shift.rollFiberStock);
+      safeSet('roll-fiber-hasil', shift.rollFiber);
+      safeSet('roll-fiber-dipakai', shift.rollFiberDipakai);
+      safeSet('cup-plastik', shift.cupPlastik);
+      safeSet('recycle-hasil', shift.recycleHasil);
+      document.getElementById('notes').value = shift.notes || '-';
 
-    setTimeout(() => {
-    calculateError();
-    }, 1);
+      setTimeout(() => calculateError(), 1);
     }
 
     async function updateShift() {
       const editId = localStorage.getItem('editShiftId');
-      if (!editId) return alert('ID shift tidak ditemukan.');
+      if (!editId) return showModal('ID shift tidak ditemukan.');
 
       const shiftData = {
         _id: editId,
@@ -291,15 +200,28 @@
 
       const response = await window.electronAPI.updateShift(shiftData);
       if (response.success) {
-        alert(response.message || 'Shift berhasil diupdate!');
-        localStorage.removeItem('editShiftId');
-        window.location.href = '../Shiftlist/shiftlist.html';
+        showModal(response.message || 'Shift berhasil diupdate!', true);
       } else {
-        alert('Gagal mengupdate shift: ' + response.message);
+        showModal('Gagal mengupdate shift: ' + (response.message || ''));
       }
     }
 
-    document.querySelector('.btn-purple').addEventListener('click', updateShift);
+    function showModal(message, redirect = false) {
+      const modal = document.getElementById('modal');
+      const messageEl = document.getElementById('modal-message');
+      const okBtn = document.getElementById('modal-ok');
+
+      messageEl.textContent = message;
+      modal.classList.remove('hidden');
+
+      okBtn.onclick = () => {
+        modal.classList.add('hidden');
+        if (redirect) {
+          window.location.href = '../Shiftlist/shiftlist.html';
+        }
+      };
+    }
+
     loadShiftForEdit();
     calculateError();
   </script>

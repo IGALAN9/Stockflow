@@ -103,7 +103,6 @@
 
     .logout-btn {
       background-color: #d33;
-
       width: 100%;
     }
 
@@ -114,8 +113,15 @@
     .message {
       margin-top: 1rem;
       font-size: 14px;
-      color: #4B5563;
       text-align: center;
+    }
+
+    .text-red {
+      color: #dc2626;
+    }
+
+    .text-green {
+      color: #16a34a;
     }
 
     hr {
@@ -173,18 +179,25 @@
 
     async function loadUser() {
       const user = await getCurrentUser();
+      const message = document.getElementById('message');
       if (user) {
         document.getElementById('currentName').textContent = user.fullName;
         currentUser = user;
       } else {
-        document.getElementById('message').textContent = 'Gagal memuat data user.';
+        message.textContent = 'Gagal memuat data user.';
+        message.className = 'message text-red';
       }
     }
 
     async function changeProfilePicture() {
       const fileInput = document.getElementById('profilePicInput');
+      const message = document.getElementById('message');
       const file = fileInput.files[0];
-      if (!file) return alert("Pilih file gambar terlebih dahulu!");
+      if (!file) {
+        message.textContent = "Pilih file gambar terlebih dahulu!";
+        message.className = 'message text-red';
+        return;
+      }
 
       const buffer = await file.arrayBuffer();
       const fileName = `${Date.now()}_${file.name}`;
@@ -196,16 +209,23 @@
       });
 
       if (result.success) {
-        alert("Foto profil berhasil diubah!");
+        message.textContent = "Foto profil berhasil diubah!";
+        message.className = 'message text-green';
         await window.api.refreshCurrentUser();
       } else {
-        alert("Gagal mengubah foto profil.");
+        message.textContent = "Gagal mengubah foto profil.";
+        message.className = 'message text-red';
       }
     }
 
     async function changeNameHandler() {
       const newName = document.getElementById('newName').value.trim();
-      if (!newName) return alert('Nama baru tidak boleh kosong.');
+      const message = document.getElementById('message');
+      if (!newName) {
+        message.textContent = 'Nama baru tidak boleh kosong.';
+        message.className = 'message text-red';
+        return;
+      }
 
       const res = await changeFullName({
         userID: currentUser.id,
@@ -213,22 +233,26 @@
       });
 
       if (res.success) {
-        document.getElementById('message').textContent = 'Nama berhasil diubah!';
+        message.textContent = 'Nama berhasil diubah!';
+        message.className = 'message text-green';
         document.getElementById('currentName').textContent = newName;
         await window.api.refreshCurrentUser();
       } else {
-        document.getElementById('message').textContent = 'Gagal mengubah nama.';
+        message.textContent = 'Gagal mengubah nama.';
+        message.className = 'message text-red';
       }
     }
 
     document.getElementById('saveNameBtn').addEventListener('click', changeNameHandler);
 
     document.getElementById('logout-btn').addEventListener('click', async () => {
+      const message = document.getElementById('message');
       const result = await logout();
       if (result.success) {
         window.location.href = '../Login/login.html';
       } else {
-        alert('Logout gagal! ' + result.message);
+        message.textContent = 'Logout gagal! ' + result.message;
+        message.className = 'message text-red';
       }
     });
 

@@ -4,234 +4,106 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Shift Input</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="../style.css" />
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f9f9f9;
-      overflow-x: hidden;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-    .topbar { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; background: white; 
-      padding: 10px 20px; 
-      border-bottom: 1px solid #e5e7eb; 
-    }
-    .menu-tabs { 
-      display: flex; 
-      gap: 8px; 
-    }
-    .tab {
-      background: none;
-      border: none;
-      font-size: 16px;
-      cursor: pointer;
-      padding: 5px 10px;
-      font-weight: bold;
-      color: #000;
-      border-bottom: 2px solid transparent;
-    }
-    .tab.active {
-      color: #4B7CEB;
-      border-color: #4B7CEB;
-    }
-    .tab:hover {
-      text-decoration: underline;
-      text-decoration-color: #007bff;
-    }
-    .shift-header {
-      position: relative;
-      margin: 20px 0;
-      padding: 0 20px;
-    }
-    .shift-header .name-input {
-      font-size: 18px;
-      width: 160px;
-      border: none;
-      border-bottom: 2px solid #ccc;
-      background: transparent;
-      outline: none;
-    }
-    .shift-header .title-wrapper {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .shift-header .title-input {
-      font-size: 24px;
-      text-align: center;
-      width: 200px;
-      border: none;
-      border-bottom: 2px solid #ccc;
-      background: transparent;
-      outline: none;
-    }
-    .shift-container { 
-      flex: 1; 
-      display: flex; 
-      background: white; 
-      border: 1px solid #ddd; 
-      margin: 0 20px; 
-      border-radius: 10px; 
-      overflow: hidden; 
-      min-height: 450px; 
-    }
-    .section { 
-      flex: 1; 
-      padding: 20px; 
-      overflow-y: auto; 
-    }
-    .form-group { 
-      margin-bottom: 15px; 
-    }
-    .form-group label { 
-      display: block; 
-      font-size: 14px; 
-      margin-bottom: 5px; 
-      color: #374151; 
-    }
-    .form-group input { 
-      width: 70%; 
-      padding: 8px; 
-      border: 1px solid #aaa; 
-      border-radius: 6px; 
-      font-size: 14px; 
-    }
-    .error-block { 
-      margin-top: 20px; 
-    }
-    .error-line { 
-      display: flex; 
-      justify-content: space-between; 
-      padding: 8px 0; 
-      font-size: 14px; 
-    }
-    .notes {
-      margin-bottom: 15px; 
-    }
-    .notes label{
-      display: block; 
-      font-size: 14px; 
-      margin-bottom: 5px;
-      margin-top: 38%;
-      color: #374151; 
-    }
-    .notes input { 
-      width: 70%; 
-      padding: 8px; 
-      border: 1px solid #aaa; 
-      border-radius: 6px; 
-      font-size: 14px; 
-    }
-    .save-button { 
-      margin: 20px; 
-      text-align: right; 
-    }
-    .btn-purple { 
-      background: #6D28D9; 
-      color: white; 
-      padding: 10px 20px; 
-      border: none; 
-      border-radius: 10px; 
-      font-size: 16px; 
-      cursor: pointer; 
-    }
-  </style>
 </head>
-<body>
+<body class="bg-gray-100 font-sans">
 
-  <header class="topbar">
-    <div class="menu-tabs">
-      <button class="tab" onclick="location.href='../index.html'">Back</button>
+  <!-- Topbar -->
+  <header class="topbar flex justify-between items-center bg-white px-5 py-2 border-b border-gray-200">
+    <div class="menu-tabs flex gap-2">
+      <button class="tab text-black font-bold px-2 py-1 border-b-2 border-transparent hover:underline" onclick="location.href='../index.html'">Back</button>
     </div>
-    <div class="top-right">
-      <div class="date" id="today-date"></div>
-    </div>
+    <div class="top-right text-sm text-gray-600" id="today-date"></div>
   </header>
 
-  <div class="shift-header">
-    <span id="creator-name" class="name-input">Nama User</span>
-    <div class="title-wrapper">
-      <input id="shift-title" class="title-input" type="text" placeholder="Shift Title..." />
+  <!-- Header -->
+  <div class="shift-header relative my-5 px-5">
+    <span id="creator-name" class="text-lg border-b-2 border-gray-300 w-40 inline-block">Nama User</span>
+    <div class="title-wrapper absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+      <input id="shift-title" class="text-2xl text-center w-52 border-b-2 border-gray-300 outline-none bg-transparent" type="text" placeholder="Shift Title..." />
     </div>
   </div>
 
-  <div class="shift-container">
-    <!-- Left Section -->
-    <div class="section">
-      <h3>STOCK GLOBAL DIPAKAI</h3>
-      <div class="form-group">
-        <label>Bahan dasar</label>
-        <input type="number" id="bahan-dasar" placeholder="Kg" />
+  <!-- Container -->
+  <div class="shift-container flex bg-white border border-gray-300 mx-5 rounded-xl overflow-hidden min-h-[450px]">
+    <!-- Left -->
+    <div class="section w-1/2 p-5 overflow-y-auto">
+      <h3 class="text-lg font-semibold mb-4">STOCK GLOBAL DIPAKAI</h3>
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Bahan dasar</label>
+        <input type="number" id="bahan-dasar" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
       </div>
-      <div class="form-group">
-        <label>Recycle</label>
-        <input type="number" id="recycle-stock" placeholder="Kg" />
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Recycle</label>
+        <input type="number" id="recycle-stock" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
       </div>
-      <div class="form-group">
-        <label>Roll fiber</label>
-        <input type="number" id="roll-fiber-stock" placeholder="Kg" />
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Roll fiber</label>
+        <input type="number" id="roll-fiber-stock" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
       </div>
 
-      <h3 style="margin-top: 30px;">HASIL PRODUKSI</h3>
-      <div class="form-group">
-        <label>Roll fiber</label>
-        <input type="number" id="roll-fiber-hasil" placeholder="Kg" />
+      <h3 class="text-lg font-semibold mt-8 mb-4">HASIL PRODUKSI</h3>
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Roll fiber</label>
+        <input type="number" id="roll-fiber-hasil" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
       </div>
-      <div class="form-group">
-        <label>Roll fiber dipakai</label>
-        <input type="number" id="roll-fiber-dipakai" placeholder="Kg" />
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Roll fiber dipakai</label>
+        <input type="number" id="roll-fiber-dipakai" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
       </div>
-      <div class="form-group">
-        <label>Cup plastik</label>
-        <input type="number" id="cup-plastik" placeholder="Kg" />
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Cup plastik</label>
+        <input type="number" id="cup-plastik" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
       </div>
-      <div class="form-group">
-        <label>Recycle</label>
-        <input type="number" id="recycle-hasil" placeholder="Kg" />
+      <div class="form-group mb-4">
+        <label class="block text-sm mb-1 text-gray-700">Recycle</label>
+        <input type="number" id="recycle-hasil" placeholder="Kg" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
       </div>
     </div>
 
     <!-- Divider -->
-    <div class="divider" style="width:1px; background:#ddd;"></div>
+    <div class="w-[1px] bg-gray-300"></div>
 
-    <!-- Right Section -->
-    <div class="section">
-      <h3>ERROR</h3>
-      <div class="error-block">
-        <div class="error-line">
+    <!-- Right -->
+    <div class="section w-1/2 p-5">
+      <h3 class="text-lg font-semibold mb-4">ERROR</h3>
+      <div class="error-block space-y-4">
+        <div class="flex justify-between text-sm">
           <span>(Bahan Dasar + Recycle) - Roll Fiber (hasil)</span>
           <span id="error-1">XX Kg</span>
         </div>
-        <div class="error-line">
+        <div class="flex justify-between text-sm">
           <span>(Roll Fiber + Dipakai) - Cup Plastik</span>
           <span id="error-2">XX Kg</span>
         </div>
-        <hr />
-        <div class="error-line">
-          <strong>Total error</strong>
-          <strong id="total-error">XX Kg</strong>
+        <hr>
+        <div class="flex justify-between font-semibold">
+          <span>Total error</span>
+          <span id="total-error">XX Kg</span>
         </div>
-        <div class="notes">
-          <label>Notes</label>
-          <input type="text" id="notes" placeholder="Masukan Notes" />
+        <div class="notes mt-10">
+          <label class="block text-sm mb-1 text-gray-700">Notes</label>
+          <input type="text" id="notes" placeholder="Masukan Notes" class="w-2/3 px-3 py-2 border rounded-md text-sm border-gray-400" />
         </div>
       </div>
     </div>
   </div>
 
-  <div class="save-button">
-    <button class="btn-purple">➕ Save</button>
+  <!-- Save Button -->
+  <div class="save-button text-right m-5">
+    <button class="btn-purple bg-purple-700 hover:bg-purple-800 text-white px-5 py-2 rounded-xl text-base">➕ Save</button>
   </div>
 
+  <!-- Modal -->
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center hidden z-50">
+    <div class="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full text-center">
+      <p id="modal-message" class="text-lg font-semibold mb-4"></p>
+      <button id="modal-ok" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">OK</button>
+    </div>
+  </div>
+
+  <!-- Script -->
   <script>
     document.getElementById('today-date').textContent = new Date().toLocaleDateString('en-GB', {
       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -270,6 +142,22 @@
         input.addEventListener('input', calculateError);
       }
     });
+
+    function showModal(message, redirect = false) {
+      const modal = document.getElementById('modal');
+      const messageEl = document.getElementById('modal-message');
+      const okBtn = document.getElementById('modal-ok');
+
+      messageEl.textContent = message;
+      modal.classList.remove('hidden');
+
+      okBtn.onclick = () => {
+        modal.classList.add('hidden');
+        if (redirect) {
+          window.location.href = '../Shiftlist/shiftlist.html';
+        }
+      };
+    }
 
     const saveButton = document.querySelector('.btn-purple');
     saveButton.addEventListener('click', () => {
@@ -311,32 +199,26 @@
         notes: notes || '-'
       };
 
-    window.electronAPI.saveShift(shiftData).then(response => {
-      if (response.success) {
-        alert('Shift berhasil disimpan!');
-        window.location.href = '../Shiftlist/shiftlist.html';
-      } else {
-        alert('Gagal menyimpan shift: ' + response.message);
-      }
-    });
-
+      window.electronAPI.saveShift(shiftData).then(response => {
+        if (response.success) {
+          showModal('Shift berhasil disimpan!', true);
+        } else {
+          showModal('Gagal menyimpan shift: ' + response.message);
+        }
+      });
     });
 
     if (window.api && window.api.getCurrentUser) {
-    window.api.getCurrentUser().then(user => {
-      console.log("USER DATA:", user);
-      if (user){
-        if(user.fullName){
+      window.api.getCurrentUser().then(user => {
+        if (user && user.fullName) {
           document.getElementById('creator-name').textContent = user.fullName;
-          window.userId = user.id;        
-          window.creatorName = user.fullName;  
+          window.userId = user.id;
+          window.creatorName = user.fullName;
         }
-      } 
-  });
-}
+      });
+    }
 
     calculateError();
   </script>
-
 </body>
 </html>
